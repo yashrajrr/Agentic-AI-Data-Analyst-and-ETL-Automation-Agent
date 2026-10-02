@@ -1,0 +1,25 @@
+[project]
+name = "ola-data-ai-agent"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Yashraj Rathor", email = "173883375+yashrajrr@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "dotenv>=0.9.9",
+    "langchain>=1.4.2",
+    "langchain-openrouter>=0.2.9",
+    "langgraph>=1.2.12",
+    "psycopg2>=2.9.13",
+    "psycopg2-binary>=2.9.13",
+    "pydantic>=2.12.5",
+]
+
+[project.scripts]
+ola-data-ai-agent = "ola_data_ai_agent:main"
+
+[build-system]
+requires = ["uv_build>=0.12.4,<0.13.0"]
+build-backend = "uv_build"
