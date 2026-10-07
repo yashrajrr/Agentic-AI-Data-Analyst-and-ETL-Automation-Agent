@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="web_dashboard" name="shell-type"/>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#ffffff",
+                        "secondary": "#5f5e5e",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#b52600",
+                        "primary-fixed-dim": "#ffb4a3",
+                        "on-tertiary-container": "#fdfcff",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e5e2db",
+                        "on-primary": "#ffffff",
+                        "background": "#fcf9f2",
+                        "outline": "#907068",
+                        "secondary-container": "#e2dfde",
+                        "primary-fixed": "#ffdad2",
+                        "on-surface": "#1c1c18",
+                        "on-primary-fixed": "#3d0700",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f1eee7",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "primary": "#b12500",
+                        "on-surface-variant": "#5b403a",
+                        "surface-dim": "#dcdad3",
+                        "tertiary-fixed-dim": "#9ccaff",
+                        "surface": "#fcf9f2",
+                        "surface-container-highest": "#e5e2db",
+                        "on-tertiary-fixed": "#001d35",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1c1c18",
+                        "on-primary-fixed-variant": "#8b1b00",
+                        "outline-variant": "#e4beb5",
+                        "surface-bright": "#fcf9f2",
+                        "tertiary-container": "#0079c5",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-container-high": "#ebe8e1",
+                        "primary-container": "#d83a12",
+                        "on-tertiary-fixed-variant": "#00497b",
+                        "inverse-primary": "#ffb4a3",
+                        "on-primary-container": "#fffbff",
+                        "on-secondary-container": "#636262",
+                        "surface-container-low": "#f6f3ec",
+                        "tertiary": "#005f9d",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-fixed-variant": "#474746",
+                        "inverse-on-surface": "#f3f0e9",
+                        "tertiary-fixed": "#d0e4ff",
+                        "inverse-surface": "#31312c",
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px",
+                    },
+                    spacing: {
+                        "space-sm": "0.5rem", "space-xs": "0.25rem",
+                        "gutter-desktop": "1.5rem", gutter: "1rem",
+                        "space-xl": "2rem", "space-lg": "1.25rem",
+                        "space-md": "0.75rem", margin: "1rem", "margin-desktop": "1.5rem",
+                    },
+                    fontFamily: {
+                        "label-tag": ["JetBrains Mono"],
+                        "caption-mono": ["JetBrains Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-md": ["Space Grotesk"],
+                        "body-lg": ["Space Grotesk"],
+                        "data-tabular": ["JetBrains Mono"],
+                        "data-code": ["JetBrains Mono"],
+                        "headline-lg": ["Space Grotesk"],
+                        "label-uppercase": ["JetBrains Mono"],
+                        "headline-xl-mobile": ["Space Grotesk"],
+                        "headline-xl": ["Space Grotesk"],
+                    },
+                    fontSize: {
+                        "label-tag": ["11px", { lineHeight: "14px", letterSpacing: "0.04em", fontWeight: "600" }],
+                        "caption-mono": ["10px", { lineHeight: "12px", letterSpacing: "0.02em", fontWeight: "400" }],
+                        "headline-md": ["16px", { lineHeight: "20px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "body-md": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "400" }],
+                        "body-lg": ["14px", { lineHeight: "20px", letterSpacing: "0em", fontWeight: "400" }],
+                        "data-tabular": ["12px", { lineHeight: "16px", letterSpacing: "0em", fontWeight: "400" }],
+                        "data-code": ["12px", { lineHeight: "18px", letterSpacing: "-0.01em", fontWeight: "400" }],
+                        "headline-lg": ["22px", { lineHeight: "26px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "label-uppercase": ["11px", { lineHeight: "14px", letterSpacing: "0.08em", fontWeight: "500" }],
+                        "headline-xl-mobile": ["24px", { lineHeight: "28px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "headline-xl": ["32px", { lineHeight: "36px", letterSpacing: "-0.03em", fontWeight: "600" }],
+                    },
+                }
+            }
+        };
+    </script>
+    <title>Data Agent</title>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+    <!-- ============ SHELL ============ -->
+    <aside class="fixed left-0 top-0 h-full w-64 bg-surface border-r border-surface-dim z-50 flex flex-col justify-between">
+        <div class="flex flex-col">
+            <div class="h-16 px-gutter flex items-center border-b border-surface-dim">
+                <span class="font-headline-md text-headline-md tracking-wider text-on-surface uppercase">DATA AGENT</span>
+            </div>
+            <nav class="flex flex-col py-space-sm">
+                <button class="nav-link px-gutter py-space-md transition-colors text-primary font-medium border-l-2 border-primary bg-surface-container-low" data-path="ask" type="button">Ask</button>
+                <button class="nav-link px-gutter py-space-md font-body-lg text-body-lg text-on-surface hover:text-primary transition-colors border-l-2 border-transparent" data-path="my-files" type="button">My Files</button>
+                <button class="nav-link px-gutter py-space-md font-body-lg text-body-lg text-on-surface hover:text-primary transition-colors border-l-2 border-transparent" data-path="schema" type="button">Schema</button>
+                <button class="nav-link px-gutter py-space-md font-body-lg text-body-lg text-on-surface hover:text-primary transition-colors border-l-2 border-transparent" data-path="architecture" type="button">Architecture</button>
+                <button class="nav-link px-gutter py-space-md font-body-lg text-body-lg text-on-surface hover:text-primary transition-colors border-l-2 border-transparent" data-path="past-questions" type="button">Past Questions</button>
+            </nav>
+        </div>
+        <div class="p-gutter border-t border-surface-dim flex items-center justify-between">
+            <span class="font-caption-mono text-caption-mono text-secondary uppercase flex items-center gap-2">
+                <span class="status-dot inline-block w-2 h-2 rounded-full bg-primary" id="status-dot"></span>
+                <span id="status-text">Checking connection…</span>
+            </span>
+        </div>
+    </aside>
+
+    <div class="pl-64">
+        <header class="fixed top-0 left-64 right-0 h-16 bg-surface border-b border-surface-dim z-40 px-gutter-desktop flex items-center justify-between">
+            <div class="flex items-center gap-space-sm">
+                <span class="font-label-uppercase text-label-uppercase text-secondary uppercase" id="header-title">WORKSPACE // OPERATOR VIEW</span>
+            </div>
+            <div class="flex items-center gap-space-md">
+                <button type="button" class="font-caption-mono text-caption-mono text-secondary hover:text-on-surface transition-colors px-space-sm py-space-xs border border-surface-dim hover:border-on-surface rounded" onclick="navigate('past-questions')">
+                    <span class="material-symbols-outlined text-[18px] mr-1 inline-block">history</span>History
+                </button>
+                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="relative pt-16 min-h-screen bg-surface w-full px-gutter-desktop py-space-xl">
+            <div class="flex flex-col w-full">
+                <!-- ============ VIEW: ASK ============ -->
+                <section id="view-ask" class="view">
+                    <div class="flex flex-col gap-space-md mb-space-xl">
+                        <div class="flex items-center justify-between">
+                            <span class="font-caption-mono text-caption-mono text-secondary tracking-widest uppercase">REF: AGENT_QUERY_EXEC // LEDGER_0982</span>
+                            <span class="font-label-tag text-label-tag text-primary flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-primary inline-block"></span>
+                                READ_ONLY ACCESS ACTIVE
+                            </span>
+                        </div>
+                        <div class="flex flex-col gap-space-sm">
+                            <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">What would you like to know?</h1>
+                            <p class="font-body-lg text-body-lg text-secondary">Ask questions across your entire ledger and databases using simple everyday language.</p>
+                        </div>
+
+                        <!-- Interactive input -->
+                        <div class="mt-space-sm flex flex-col md:flex-row gap-0 border border-on-surface bg-surface-container-lowest">
+                            <div class="relative flex-1 flex items-center">
+                                <span class="material-symbols-outlined text-secondary ml-space-md select-none text-[20px]">search</span>
+                                <input class="w-full px-space-md py-space-md font-body-lg text-body-lg text-on-surface bg-transparent focus:outline-none placeholder:text-secondary" id="query-input" placeholder="Type your question in plain English..." type="text"/>
+                                <button class="ml-space-md px-space-md text-secondary hover:text-on-surface font-caption-mono text-caption-mono" type="button" onclick="document.getElementById('query-input').value = ''">[CLEAR]</button>
+                            </div>
+                            <button id="ask-button" class="bg-primary text-on-primary font-label-uppercase text-label-uppercase px-space-xl py-space-md uppercase tracking-wider hover:bg-primary-container transition-colors flex items-center justify-center gap-space-xs border-t md:border-t-0 md:border-l border-on-surface" type="button">
+                                <span>Ask</span>
+                                <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+                            </button>
+                        </div>
+
+                        <!-- Example chips -->
+                        <div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
+                            <span class="font-caption-mono text-caption-mono text-secondary uppercase mr-space-xs">Examples:</span>
+                            <button class="bg-on-surface text-surface font-body-md text-body-md px-space-sm py-0.5 border border-on-surface cursor-default" type="button" onclick="setQuery('Who are our top 5 users by rating?')">Who are our top 5 users by rating?</button>
+                            <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Show me this month\\'s payments')">Show me this month's payments</button>
+                            <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Which vehicles got the lowest ratings?')">Which vehicles got the lowest ratings?</button>
+                            <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV')">Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV</button>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline strip -->
+                    <div id="pipeline-strip" class="hidden border-t border-b border-surface-dim py-space-sm mb-space-lg flex flex-col md:flex-row md:items-center justify-between gap-space-xs text-secondary">
+                        <div class="flex items-center gap-space-sm">
+                            <span class="w-2 h-2 bg-primary inline-block animate-pulse"></span>
+                            <span class="font-body-md text-body-md text-on-surface font-medium" id="pipeline-label">Looking through your data…</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-space-md font-body-md text-body-md">
+                            <span class="stage uncompleted text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">circle</span>Understanding your question</span>
+                            <span class="text-surface-dim">/</span>
+                            <span class="stage uncompleted text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">circle</span>Generating response</span>
+                            <span class="text-surface-dim">/</span>
+                            <span class="stage uncompleted text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">circle</span>Preparing results</span>
+                        </div>
+                    </div>
+
+                    <!-- Results area -->
+                    <div id="results-area">
+                        <!-- Initial empty state -->
+                        <div class="bg-surface-container-lowest border border-on-surface mb-space-lg">
+                            <div class="p-space-lg border-b border-surface-dim flex flex-col md:flex-row md:items-baseline justify-between gap-space-xs">
+                                <div>
+                                    <span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">OUTPUT LEDGER 01</span>
+                                    <div class="flex flex-col gap-2 text-on-surface">
+                                        <h2 class="font-headline-lg text-headline-lg tracking-tight">Asking your question</h2>
+                                        <p class="font-body-lg text-body-lg text-secondary">Submit a question above and the Data Agent will route, reason, and return a structured answer.</p>
+                                    </div>
+                                </div>
+                                <span class="font-caption-mono text-caption-mono text-secondary">WAITING FOR INPUT</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer note -->
+                    <div class="border-l-2 border-primary bg-surface-container-lowest p-space-md border-r border-t border-b border-surface-dim">
+                        <div class="flex items-start gap-space-sm">
+                            <span class="material-symbols-outlined text-primary text-[20px] select-none mt-0.5">verified_user</span>
+                            <div class="flex flex-col gap-0.5">
+                                <span class="font-body-md text-body-md font-semibold text-on-surface">Tip: You can ask for summaries, spreadsheets, or trends.</span>
+                                <p class="font-body-md text-body-md text-secondary">Data Agent can read your data, but it cannot delete or change existing records. All source records remain immutable and protected.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ VIEW: MY FILES ============ -->
+                <section id="view-my-files" class="view hidden">
+                    <div class="mb-space-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-caption-mono text-caption-mono text-secondary tracking-widest uppercase">REF: FILE_LEDGER_EXEC</span>
+                                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">My Files</h1>
+                                <p class="font-body-lg text-body-lg text-secondary mt-1 max-w-2xl">Extracted and transformed datasets produced by the Data Agent, organized by operation.</p>
+                            </div>
+                            <span class="font-label-tag text-label-tag text-primary flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-primary inline-block"></span>
+                                SAVED ON DISK
+                            </span>
+                        </div>
+                    </div>
+
+                    <div id="files-panel" class="bg-surface-container-lowest border border-on-surface">
+                        <div class="p-space-lg border-b border-surface-dim flex items-center justify-between">
+                            <div>
+                                <span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">DATA STORE</span>
+                                <span class="font-body-lg text-body-lg text-on-surface" id="files-count">Loading files…</span>
+                            </div>
+                            <div class="flex gap-2 text-secondary font-caption-mono">
+                                <span id="extract-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent text-primary">extract</span>
+                                <span class="mx-1 text-secondary">/</span>
+                                <span id="transform-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent">transform</span>
+                            </div>
+                        </div>
+                        <div id="files-empty" class="p-space-xl text-center border-t border-surface-dim hidden">
+                            <span class="material-symbols-outlined text-secondary text-3xl">folder_off</span>
+                            <p class="font-body-lg text-body-lg text-secondary mt-2">No files produced yet.</p>
+                            <p class="font-body-md text-body-md text-on-surface mt-1">Ask the Data Agent to extract or transform data to populate these folders.</p>
+                        </div>
+                        <div id="files-list" class="divide-y divide-surface-dim hidden">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="text-secondary font-label-uppercase text-label-uppercase">
+                                        <th class="py-space-sm px-space-md">File</th>
+                                        <th class="py-space-sm px-space-md capitalize">Folder</th>
+                                        <th class="py-space-sm px-space-md text-right">Size</th>
+                                        <th class="py-space-sm px-space-md text-right">Modified</th>
+                                        <th class="py-space-sm px-space-md"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="font-data-tabular text-data-tabular text-on-surface" id="files-rows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ VIEW: PAST QUESTIONS ============ -->
+                <section id="view-past-questions" class="view hidden">
+                    <div class="mb-space-xl">
+                        <span class="font-caption-mono text-caption-mono text-secondary tracking-widest uppercase">REF: QUERY_LEDGER</span>
+                        <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Past Questions</h1>
+                        <p class="font-body-lg text-body-lg text-secondary mt-1 max-w-2xl">A short history of queries you have asked this session, with their route and the answer the Data Agent returned.</p>
+                    </div>
+
+                    <div id="history-panel" class="bg-surface-container-lowest border border-on-surface">
+                        <div class="p-space-lg border-b border-surface-dim flex items-center justify-between">
+                            <div>
+                                <span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">SESSION LEDGER</span>
+                                <span class="font-body-lg text-body-lg text-on-surface" id="history-count">Loading history…</span>
+                            </div>                                    <button type="button" class="font-caption-mono text-caption-mono text-secondary border border-surface-dim hover:border-on-surface px-space-md py-space-xs rounded" onclick="clearHistory()">Clear history</button>
+                        </div>
+                        <div id="history-empty" class="p-space-xl text-center border-t border-surface-dim">
+                            <span class="material-symbols-outlined text-secondary text-3xl">history_toggle_off</span>
+                            <p class="font-body-lg text-body-lg text-secondary mt-2">No past questions yet.</p>
+                            <p class="font-body-md text-body-md text-on-surface mt-1">Ask your first question using the Ask view.</p>
+                        </div>
+                        <div id="history-list" class="hidden overflow-y-auto max-h-[75vh] divide-y divide-surface-dim">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="text-secondary font-label-uppercase text-label-uppercase">
+                                        <th class="py-space-sm px-space-md">Question</th>
+                                        <th class="py-space-sm px-space-md">Route</th>
+                                        <th class="py-space-sm px-space-md">Answer (excerpt)</th>
+                                        <th class="py-space-sm px-space-md text-right">Submitted</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="font-body-md text-body-md text-on-surface divide-y divide-surface-dim" id="history-rows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ VIEW: SCHEMA ============ -->
+                <section id="view-schema" class="view hidden">
+                    <div class="mb-space-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-caption-mono text-caption-mono text-secondary tracking-widest uppercase">REF: DB_SCHEMA_LEDGER</span>
+                                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Database Schema</h1>
+                                <p class="font-body-lg text-body-lg text-secondary mt-1 max-w-2xl">Browse table structures, column types, nullable constraints, and row counts directly from PostgreSQL.</p>
+                            </div>
+                            <span class="font-label-tag text-label-tag text-primary flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-primary inline-block"></span>
+                                LIVE METADATA
+                            </span>
+                        </div>
+                    </div>
+                    <div id="schema-panel" class="flex flex-col gap-space-md">
+                        <div class="bg-surface-container-lowest border border-on-surface p-space-xl flex flex-col items-center gap-space-sm text-center" id="schema-loading">
+                            <span class="material-symbols-outlined animate-spin text-primary text-[28px]">sync</span>
+                            <span class="font-caption-mono text-caption-mono text-secondary">LOADING SCHEMA…</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============ VIEW: ARCHITECTURE ============ -->
+                <section id="view-architecture" class="view hidden">
+                    <div class="mb-space-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-caption-mono text-caption-mono text-secondary tracking-widest uppercase">REF: LANGGRAPH_ARCH</span>
+                                <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-1">Pipeline Architecture</h1>
+                                <p class="font-body-lg text-body-lg text-secondary mt-1 max-w-2xl">Visual representation of the LangGraph multi-agent orchestration and reasoning paths.</p>
+                            </div>
+                            <span class="font-label-tag text-label-tag text-primary flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 bg-primary inline-block"></span>
+                                AGENT ORCHESTRATION
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-space-lg">
+                        <div class="bg-surface-container-lowest border border-on-surface p-space-lg">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-2">Main Data Agent (Router)</h2>
+                            <p class="font-body-md text-body-md text-secondary mb-space-md">The top-level router that understands natural language intent and delegates to either the SQL or ETL specialist agents.</p>
+                            <img src="/images/data_agent_graph.png" alt="Data Agent Graph" class="w-full h-auto border border-surface-dim rounded shadow-md bg-white mix-blend-screen p-4" />
+                        </div>
+                        
+                        <div class="bg-surface-container-lowest border border-on-surface p-space-lg">
+                            <h2 class="font-headline-md text-headline-md text-on-surface mb-2">SQL Analyst Specialist</h2>
+                            <p class="font-body-md text-body-md text-secondary mb-space-md">The agent responsible for safely converting natural language to SQL, checking safety, and executing queries.</p>
+                            <img src="/images/sql_analyst_graph.png" alt="SQL Analyst Graph" class="w-full h-auto border border-surface-dim rounded shadow-md bg-white mix-blend-screen p-4" />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /* ============================================================
+           State & navigation
+           ============================================================ */
+        const STAGES = {
+            UNSPECIFIED: "Looking through your data…",
+            SQL: ["Understanding your question", "Generating SQL", "Validating query", "Executing query", "Preparing results"],
+            ETL: ["Understanding your request", "Selecting ETL tool", "Generating code", "Executing transformation", "Preparing results"],
+        };
+        let activeView = "ask";
+
+        function navigate(view, fragment) {
+            if (view) {
+                document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
+                document.getElementById("view-" + view).classList.remove("hidden");
+                document.querySelectorAll(".nav-link").forEach(n => {
+                    const on = n.getAttribute("data-path") === view;
+                    n.classList.toggle("border-primary", on);
+                    n.classList.toggle("bg-surface-container-low", on);
+                    n.classList.toggle("text-primary", on);
+                    n.classList.toggle("font-medium", on);
+                    n.classList.toggle("border-transparent", !on);
+                    n.classList.toggle("text-on-surface", !on);
+                    n.classList.toggle("font-body-lg", !on);
+                    n.classList.toggle("text-body-lg", !on);
+                });
+                const titles = {
+                    ask: "WORKSPACE // OPERATOR VIEW",
+                    "my-files": "WORKSPACE // FILE LEDGER",
+                    schema: "WORKSPACE // SCHEMA LEDGER",
+                    architecture: "WORKSPACE // PIPELINE ARCHITECTURE",
+                    "past-questions": "WORKSPACE // QUERY LEDGER",
+                };
+                document.getElementById("header-title").textContent = titles[view] || "WORKSPACE";
+                activeView = view;
+                if (view === "schema") loadSchema();
+            }
+            const el = document.querySelector(`[data-path="${fragment || view}"]`);
+            if (el) el.scrollIntoView({ block: "start", inline: "nearest" });
+        }
+
+        function setQuery(text) {
+            document.getElementById("query-input").value = text;
+            navigate("ask");
+        }
+
+        (function init() {
+            for (const link of document.querySelectorAll(".nav-link")) {
+                link.addEventListener("click", e => { e.preventDefault(); navigate(link.getAttribute("data-path")); });
+            }
+            document.getElementById("query-input").addEventListener("keydown", e => {
+                if (e.key === "Enter") { e.preventDefault(); document.getElementById("ask-button").click(); }
+            });
+            reconcileViewFromFragment();
+            initConnection();
+        })();
+
+        function reconcileViewFromFragment() {
+            const hash = window.location.hash.replace("#", "");
+            if (hash === "my-files" || hash === "past-questions") navigate(hash);
+        }
+        window.addEventListener("hashchange", reconcileViewFromFragment);
+
+        /* ============================================================
+           Connection status (live)
+           ============================================================ */
+        async function initConnection() {
+            try {
+                const r = await fetch("/api/db-info");
+                const body = await r.json();
+                setConnection(body.connected, body.message || "");
+            } catch (e) {
+                setConnection(false, e.message);
+            }
+        }
+        window.addEventListener("load", () => {
+            /** @type {Element} */
+            document.getElementById("status-dot").classList.remove("bg-primary");
+            document.getElementById("status-dot").classList.remove("bg-error");
+            document.getElementById("status-dot").classList.remove("bg-surface-variant");
+        });
+
+        function setConnection(connected, message) {
+            const dot = document.getElementById("status-dot");
+            const text = document.getElementById("status-text");
+            dot.classList.remove("bg-primary");
+            dot.classList.remove("bg-error");
+            dot.classList.remove("bg-surface-variant");
+            if (connected) {
+                dot.classList.add("bg-primary");
+                text.textContent = "Connected to " + (message && message.includes(" ") ? message.split(" ")[0] : "your data");
+            } else {
+                dot.classList.add("bg-error");
+                text.textContent = "Offline — " + (message || "data unavailable");
+            }
+        }
+
+        /* ============================================================
+           Ask flow
+           ============================================================ */
+        const EXPLANATION_HTML_CACHE = new Map();
+
+        async function ask() {
+            const input = document.getElementById("query-input");
+            const query = (input.value || "").trim();
+            if (!query) return;
+
+            const resultsArea = document.getElementById("results-area");
+            resultsArea.innerHTML = `
+                        <div class="bg-surface-container-lowest border border-on-surface mb-space-lg">
+                            <div class="p-space-lg border-b border-surface-dim flex flex-col items-center justify-center py-10">
+                                <span class="material-symbols-outlined animate-spin text-primary text-[32px] mb-4">sync</span>
+                                <h2 class="font-headline-lg text-headline-lg text-on-surface text-center">Processing with Data Agent…</h2>
+                                <span class="font-caption-mono text-caption-mono text-secondary mt-2">Routing through LangGraph backend</span>
+                            </div>
+                        </div>
+                    `;
+            input.disabled = true;
+            document.getElementById("ask-button").disabled = true;
+
+            try {
+                showPipeline("unspecified");
+                const result = await fetch("/api/ask", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ query }),
+                }).then(r => r.json());
+
+                if (result.status !== "success") {
+                    resultsArea.innerHTML = `
+                                <div class="bg-error-container border border-on-error p-space-lg mb-space-lg">
+                                    <div class="flex items-start gap-space-sm">
+                                        <span class="material-symbols-outlined text-error text-[20px] mt-0.5 select-none">error</span>
+                                        <div>
+                                            <h2 class="font-headline-lg text-error text-headline-lg m-0">Sorry, I couldn't process that request.</h2>
+                                            <p class="font-body-lg text-body-lg text-on-surface mt-2">${escapeHtml(result.message || "An unexpected error occurred.")}</p>
+                                            <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="clearResults()">Dismiss</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                    input.disabled = false;
+                    document.getElementById("ask-button").disabled = false;
+                    return;
+                }
+
+                if (result.route === "sql") {
+                    renderSqlResult(resultsArea, result, query);
+                } else if (result.route === "etl") {
+                    renderEtlResult(resultsArea, result, query);
+                } else {
+                    renderPlainResult(resultsArea, result, query);
+                }
+            } catch (err) {
+                resultsArea.innerHTML = `
+                            <div class="bg-error-container border border-on-error p-space-lg mb-space-lg">
+                                <div class="flex items-start gap-space-sm">
+                                    <span class="material-symbols-outlined text-error text-[20px] mt-0.5 select-none">wifi_off</span>
+                                    <div>
+                                        <h2 class="font-headline-lg text-error text-headline-lg m-0">Network error.</h2>
+                                        <p class="font-body-lg text-body-lg text-on-surface mt-2">${escapeHtml(err.message || "Could not reach the backend.")}</p>
+                                        <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="clearResults()">Dismiss</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+            } finally {
+                input.disabled = false;
+                document.getElementById("ask-button").disabled = false;
+            }
+        }
+
+        document.getElementById("ask-button").addEventListener("click", ask);
+
+        function clearResults() {
+            const resultsArea = document.getElementById("results-area");
+            document.getElementById("pipeline-strip").classList.add("hidden");
+            resultsArea.innerHTML = `
+                        <div class="bg-surface-container-lowest border border-on-surface mb-space-lg">
+                            <div class="p-space-lg border-b border-surface-dim flex flex-col md:flex-row md:items-baseline justify-between gap-space-xs">
+                                <div>
+                                    <span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">OUTPUT LEDGER 01</span>
+                                    <div class="flex flex-col gap-2 text-on-surface">
+                                        <h2 class="font-headline-lg text-headline-lg tracking-tight">Asking your question</h2>
+                                        <p class="font-body-lg text-body-lg text-secondary">Submit a question above and the Data Agent will route, reason, and return a structured answer.</p>
+                                    </div>
+                                </div>
+                                <span class="font-caption-mono text-caption-mono text-secondary">WAITING FOR INPUT</span>
+                            </div>
+                        </div>
+                    `;
+        }
+
+        /* ============================================================
+           Pipeline strip
+           ============================================================ */
+        function showPipeline(route) {
+            const strip = document.getElementById("pipeline-strip");
+            strip.classList.remove("hidden");
+            document.getElementById("pipeline-label").textContent = STAGES.UNSPECIFIED;
+            resetStages();
+            if (route === "sql") stageList(STAGES.SQL[0]);
+            else if (route === "etl") stageList(STAGES.ETL[0]);
+            else stageList(STAGES.UNSPECIFIED);
+        }
+
+        function markStageDone(label) {
+            const all = document.querySelectorAll(".stage");
+            for (const el of all) {
+                const text = (el.textContent || "").trim();
+                if (label && text.toLowerCase().startsWith(label.toLowerCase().slice(0, 14))) {
+                    el.classList.remove("uncompleted");
+                    el.classList.add("completed");
+                }
+            }
+        }
+
+        function resetStages() {
+            document.querySelectorAll(".stage").forEach(stage => {
+                stage.classList.remove("completed", "uncompleted", "current");
+                stage.classList.add("uncompleted");
+            });
+        }
+
+        function stageList(first) {
+            const stageEls = document.querySelectorAll(".stage");
+            let i = 0;
+            for (const el of stageEls) {
+                const text = (el.textContent || "").trim();
+                if (i === 0 && first) { el.textContent = first; }
+                i++;
+            }
+            const all = Array.from(stageEls);
+            if (all.length) {
+                all[0].classList.add("current");
+                if (all.length > 1) all[1].classList.remove("current");
+            }
+        }
+
+        /* ============================================================
+           SQL result rendering
+           ============================================================ */
+        let currentResult = null;
+
+        function renderSqlResult(container, result, query) {
+            currentResult = result;
+            container.innerHTML = "";
+            const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: SQL", result.answer, result.sql.row_count, result.sql.error, result.timing_ms);
+            container.appendChild(header);
+
+            const body = document.createElement("div");
+            body.className = "w-full overflow-x-auto";
+
+            if (result.sql.error) {
+                body.innerHTML = `
+                            <div class="p-space-lg border-b border-surface-dim flex flex-col items-start gap-space-sm">
+                                <span class="font-caption-mono text-caption-mono text-secondary uppercase">EXECUTION ERROR</span>
+                                <code class="font-data-code text-data-code text-error select-all block whitespace-pre rounded border border-error-container p-space-sm">${escapeHtml(result.sql.error)}</code>
+                            </div>
+                        `;
+                container.appendChild(body);
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendTransparency(container, result, query);
+                return;
+            }
+
+            if (result.sql.is_safe === "No") {
+                body.innerHTML = `
+                            <div class="bg-surface-container-lowest border border-on-surface mb-space-lg">
+                                <div class="p-space-md border surface-variant flex items-start gap-space-sm">
+                                    <span class="material-symbols-outlined text-surface-tint text-[20px] select-none mt-0.5">warning</span>
+                                    <div>
+                                        <span class="font-label-tag text-label-tag text-surface-tint mb-1 block">SAFETY VERDICT: REJECTED</span>
+                                        <p class="font-body-md text-body-md text-on-surface">${escapeHtml(result.sql.comments || "The generated SQL query was not safe to execute.")}</p>
+                                        <div class="mt-2 border border-surface-dim bg-surface-container-lowest p-space-sm">
+                                            <span class="font-caption-mono text-caption-mono text-secondary block mb-1">REJECTED QUERY:</span>
+                                            <code class="font-data-code text-data-code text-on-surface block select-all overflow-x-auto whitespace-pre">${escapeHtml(result.sql.query || "<query omitted>")}</code>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                container.appendChild(body);
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendTransparency(container, result, query);
+                return;
+            }
+
+            if (result.sql.row_count === 0) {
+                body.innerHTML = `
+                            <div class="p-space-lg border-b border-surface-dim flex flex-col items-center gap-space-sm py-6 text-center">
+                                <span class="material-symbols-outlined text-secondary text-3xl">scatter_plot</span>
+                                <span class="font-caption-mono text-caption-mono text-secondary">NO RESULTS</span>
+                                <p class="font-body-lg text-body-lg text-on-surface">The query returned no rows.</p>
+                            </div>
+                        `;
+                container.appendChild(body);
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendTransparency(container, result, query);
+                return;
+            }
+
+            const table = document.createElement("table");
+            table.className = "w-full text-left border-collapse";
+
+            const thead = document.createElement("thead");
+            thead.innerHTML = `
+                        <tr class="bg-surface-container-low border-b border-on-surface text-secondary font-label-uppercase text-label-uppercase">
+                            <th class="py-space-sm px-space-md w-16 border-r border-surface-dim">#</th>
+                            ${result.sql.columns.map(col => `<th class="py-space-sm px-space-md border-r border-surface-dim text-left">${escapeHtml(col)}</th>`).join("")}
+                        </tr>
+                    `;
+            table.appendChild(thead);
+
+            const tbody = document.createElement("tbody");
+            tbody.className = "font-data-tabular text-data-tabular divide-y divide-surface-dim text-on-surface";
+            let idx = 1;
+            for (const row of result.sql.rows) {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-surface-container-low transition-colors";
+                const cells = [`<td class="py-space-sm px-space-md font-medium border-r border-surface-dim">${String(idx).padStart(2, "0")}</td>`];
+                for (let c = 0; c < result.sql.columns.length; c++) {
+                    const raw = row[c] != null && row[c] !== undefined ? row[c] : "";
+                    const display = typeof raw === "number" ? raw : escapeHtml(String(raw));
+                    const right = isNumericColumn(result.sql.columns[c]);
+                    cells.push(
+                        `<td class="${right ? "text-right" : ""} py-space-sm px-space-md border-r border-surface-dim">${display}</td>`
+                    );
+                }
+                cells.push(`${idx === 1 ? "" : ""}`);
+                tr.innerHTML = cells.join("");
+                tbody.appendChild(tr);
+                idx++;
+            }
+            table.appendChild(tbody);
+            body.appendChild(table);
+            container.appendChild(body);
+
+            container.appendChild(actionsStrip(query));
+            appendFollowup(container, query, result.sql.query, "sql");
+            appendTransparency(container, result, query);
+        }
+
+        function headerBlock(ledgerLabel, answer, rowCount, error, timingMs) {
+            const wrap = document.createElement("div");
+            wrap.className = "p-space-lg border-b border-surface-dim flex flex-col md:flex-row md:items-baseline justify-between gap-space-xs";
+            const left = document.createElement("div");
+            left.innerHTML = `<span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">${ledgerLabel}</span>`;
+            const h = document.createElement("h2");
+            h.className = "font-headline-lg text-headline-lg text-on-surface mt-0";
+            h.textContent = answer || "(no answer)";
+            left.appendChild(h);
+            wrap.appendChild(left);
+
+            const right = document.createElement("span");
+            right.className = "font-caption-mono text-caption-mono text-secondary";
+            let parts = [];
+            if (typeof rowCount === "number" && rowCount >= 0) parts.push(`${rowCount} result${rowCount === 1 ? "" : "s"}`);
+            if (timingMs != null && timingMs > 0) parts.push(`· found in ${Math.round(timingMs)}ms`);
+            right.textContent = parts.length ? parts.join(" ") : "returned";
+            wrap.appendChild(right);
+            return wrap;
+        }
+
+        function actionsStrip(query) {
+            const strip = document.createElement("div");
+            strip.className = "px-space-md py-space-sm border-t border-on-surface bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm";
+            const left = document.createElement("div");
+            left.className = "flex items-center gap-space-xs flex-wrap";
+            left.innerHTML = `
+                        <button type="button" class="border border-on-surface bg-surface-container-lowest hover:bg-on-surface hover:text-surface px-space-md py-space-xs font-label-uppercase text-label-uppercase transition-colors flex items-center gap-1" id="btn-copy">
+                            <span class="material-symbols-outlined text-[14px]">content_copy</span>
+                            <span>Copy to clipboard</span>
+                        </button>
+                        <button type="button" class="border border-on-surface bg-surface-container-lowest hover:bg-on-surface hover:text-surface px-space-md py-space-xs font-label-uppercase text-label-uppercase transition-colors flex items-center gap-1" id="btn-download">
+                            <span class="material-symbols-outlined text-[14px]">table_view</span>
+                            <span>Download as spreadsheet</span>
+                        </button>
+                    `;
+            strip.appendChild(left);
+
+            const right = document.createElement("span");
+            right.className = "font-caption-mono text-caption-mono text-secondary";
+            right.textContent = "FORMAT: CSV / EXCEL READABLE";
+            strip.appendChild(right);
+
+            strip.querySelector("#btn-copy").addEventListener("click", () => copyResults());
+            strip.querySelector("#btn-download").addEventListener("click", () => downloadResults());
+            return strip;
+        }
+
+        function appendFollowup(container, query, queryText, kind) {
+            const follow = document.createElement("div");
+            follow.className = "mb-space-xl";
+            const chip = document.createElement("div");
+            chip.className = "flex items-center justify-between mb-space-sm";
+
+            const left = document.createElement("span");
+            left.className = "font-caption-mono text-caption-mono text-secondary uppercase tracking-wider";
+            left.textContent = "Suggested next inquiries";
+            chip.appendChild(left);
+
+            const right = document.createElement("span");
+            right.className = "font-caption-mono text-caption-mono text-secondary";
+            right.textContent = "3 PRE-INDEXED OPTIONS";
+            chip.appendChild(right);
+            follow.appendChild(chip);
+
+            const grid = document.createElement("div");
+            grid.className = "grid grid-cols-1 md:grid-cols-3 gap-space-sm";
+
+            const options = [];
+            if (kind === "sql") {
+                options.push(["Show me the bottom 5", "Show me the bottom 5"]);
+                options.push(["Break this down by month", "Break this down by month"]);
+                options.push(["Explain this query", "Explain this query"]);
+            } else {
+                options.push(["Show a different format", "Show a different format"]);
+                options.push(["Transform it again", "Transform it again"]);
+                options.push(["Where is this saved?", "Where is this saved?"]);
+            }
+            for (const [text] of options) {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className =
+                    "text-left p-space-md border border-on-surface bg-surface-container-lowest hover:bg-surface-container-low transition-colors flex items-center justify-between gap-space-sm group";
+                btn.innerHTML = `
+                            <span class="font-body-md text-body-md text-on-surface">${escapeHtml(text)}</span>
+                            <span class="material-symbols-outlined text-secondary group-hover:text-on-surface transition-colors text-[18px]">arrow_forward</span>
+                        `;
+                btn.addEventListener("click", () => setQuery(text));
+                grid.appendChild(btn);
+            }
+            follow.appendChild(grid);
+            container.appendChild(follow);
+        }
+
+        function appendTransparency(container, result, query) {
+            const panel = document.createElement("div");
+            panel.className = "border border-surface-dim bg-surface-container-lowest mb-space-lg";
+            panel.innerHTML = `
+                        <button type="button" class="w-full text-left p-space-md flex items-center justify-between hover:bg-surface-container-low transition-colors" id="transparency-toggle">
+                            <div class="flex items-center gap-space-xs text-on-surface font-body-lg text-body-lg font-medium">
+                                <span class="material-symbols-outlined text-[18px]" id="transparency-icon">arrow_right</span>
+                                <span>How this was found</span>
+                            </div>
+                            <span class="font-caption-mono text-caption-mono text-secondary">[EXPLAIN_LOG]</span>
+                        </button>
+                        <div class="hidden border-t border-surface-dim p-space-md flex flex-col gap-space-sm bg-surface-container-low" id="transparency-panel"></div>
+                    `;
+            container.appendChild(panel);
+
+            const lastMessage = document.querySelector("#transparency-panel") ||
+                userReasonText(result, query);
+            const toggle = panel.querySelector("#transparency-toggle");
+            const icon = panel.querySelector("#transparency-icon");
+            const target = panel.querySelector("#transparency-panel");
+            toggle.addEventListener("click", () => {
+                const hidden = target.classList.toggle("hidden");
+                icon.textContent = hidden ? "arrow_right" : "arrow_drop_down";
+            });
+
+            if (result.route === "sql" && result.sql && result.sql.query) {
+                const block = document.createElement("div");
+                block.className = "border border-surface-dim bg-surface-container-lowest p-space-sm";
+                block.innerHTML = `
+                            <span class="font-caption-mono text-caption-mono text-secondary block mb-1">// INTERNAL AUDIT QUERY:</span>
+                            <code class="font-data-code text-data-code text-on-surface block select-all overflow-x-auto whitespace-pre">${escapeHtml(result.sql.query || "")}</code>
+                        `;
+                target.appendChild(block);
+            } else if (result.route === "etl" && result.etl && result.etl.code) {
+                const block = document.createElement("div");
+                block.className = "border border-surface-dim bg-surface-container-lowest p-space-sm";
+                block.innerHTML = `
+                            <span class="font-caption-mono text-caption-mono text-secondary block mb-1">// GENERATED ETL CODE:</span>
+                            <code class="font-data-code text-data-code text-on-surface block select-all overflow-x-auto whitespace-pre">${escapeHtml(result.etl.code || "")}</code>
+                            <span class="font-caption-mono text-caption-mono text-secondary mt-2 block">OUTPUT PATH: ${escapeHtml(result.etl.output_path || "—")}</span>
+                        `;
+                target.appendChild(block);
+            } else {
+                const para = document.createElement("p");
+                para.className = "font-body-md text-body-md text-on-surface";
+                para.textContent = userReasonText(result, query);
+                target.appendChild(para);
+            }
+        }
+
+        function userReasonText(result, query) {
+            const sql = result.sql;
+            const etl = result.etl;
+            if (sql && sql.query) {
+                return "We translated your question into a SQL query and ran it against the database. Expand the panel to see the exact query.";
+            }
+            if (etl && etl.tool) {
+                return `The Data Agent selected the ${etl.tool} tool and generated pandas code to process your request. Expand the panel for the exact code and output path.`;
+            }
+            return "The Data Agent analyzed your question and returned an answer. Expand the panel to inspect the reasoning trail when available.";
+        }
+
+        /* ============================================================
+           ETL result rendering
+           ============================================================ */
+        function renderEtlResult(container, result, query) {
+            currentResult = result;
+            container.innerHTML = "";
+            const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: ETL", result.answer, null, null, result.timing_ms);
+            container.appendChild(header);
+
+            const wrap = document.createElement("div");
+            wrap.className = "bg-surface-container-lowest border border-on-surface mb-space-lg";
+            wrap.appendChild(header);
+
+            const details = document.createElement("div");
+            details.className = "p-space-lg border-b border-surface-dim";
+
+            const toolName = result.etl.tool || "etl";
+            const status = result.etl.success
+                ? `<span class="material-symbols-outlined text-[20px] text-primary select-none mt-0.5">check_circle</span>`
+                : `<span class="material-symbols-outlined text-[20px] text-error select-none mt-0.5">error</span>`;
+
+            details.innerHTML = `
+                        <div class="flex items-start gap-space-sm">
+                            ${status}
+                            <div>
+                                <span class="font-label-tag text-label-tag text-surface-tint block mb-1">TOOL: ${toolName.toUpperCase() || "ETL"}</span>
+                                <p class="font-body-lg text-body-lg text-on-surface">${escapeHtml(result.answer || "")}</p>
+                                ${result.etl.output_path ? `
+                                    <div class="mt-3 border border-surface-dim bg-surface-container-lowest p-space-sm">
+                                        <span class="font-caption-mono text-caption-mono text-secondary block mb-1">OUTPUT PATH:</span>
+                                        <code class="font-data-code text-data-code text-on-surface block select-all">${escapeHtml(result.etl.output_path)}</code>
+                                    </div>
+                                ` : ""}
+                                ${result.etl.message ? `
+                                    <div class="mt-3 border border-surface-dim bg-surface-container-lowest p-space-sm">
+                                        <span class="font-caption-mono text-caption-mono text-secondary block mb-1">TOOL OUTPUT:</span>
+                                        <code class="font-data-code text-data-code text-on-surface block select-all overflow-x-auto whitespace-pre">${escapeHtml(result.etl.message)}</code>
+                                    </div>
+                                ` : ""}
+                            </div>
+                        </div>
+                    `;
+            wrap.appendChild(details);
+            container.appendChild(wrap);
+
+            container.appendChild(actionsStrip(query, "etl"));
+            appendFollowup(container, query, result.answer, "etl");
+            appendTransparency(container, result, query);
+        }
+
+        function renderPlainResult(container, result, query) {
+            currentResult = result;
+            container.innerHTML = "";
+            const wrap = document.createElement("div");
+            wrap.className = "bg-surface-container-lowest border border-on-surface mb-space-lg";
+            const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: " + (result.route || "DATA_AGENT"), result.answer, null, null, result.timing_ms);
+            wrap.appendChild(header);
+
+            const body = document.createElement("div");
+            body.className = "p-space-lg border-b border-surface-dim flex flex-col md:flex-row md:items-baseline justify-between gap-space-xs";
+            body.innerHTML = `
+                        <div class="flex flex-col gap-2 text-on-surface">
+                            <p class="font-body-lg text-body-lg text-on-surface">${escapeHtml(result.answer || "")}</p>
+                        </div>
+                        <span class="font-caption-mono text-caption-mono text-secondary">${result.route ? result.route.toUpperCase() : "UNKNOWN"} ROUTE</span>
+                    `;
+            wrap.appendChild(body);
+            container.appendChild(wrap);
+
+            container.appendChild(actionsStrip(query, "plain"));
+            appendTransparency(container, result, query);
+        }
+
+        /* ============================================================
+           Copy / download
+           ============================================================ */
+        function copyResults() {
+            const resultsArea = document.getElementById("results-area");
+            const rows = resultsArea.querySelectorAll("tr");
+            if (!rows.length) return;
+
+            let csv = "";
+            for (let r = 0; r < rows.length; r++) {
+                const cells = rows[r].querySelectorAll("th, td");
+                if (!cells.length) continue;
+                const vals = [];
+                for (const c of cells) vals.push(c.textContent.replace(/"/g, '""').trim());
+                csv += vals.join(",") + "\n";
+                if (r === 0) csv += "\n";
+            }
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `data_agent_export_${Math.round(Date.now() / 1000)}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
+
+            const btn = document.getElementById("btn-copy");
+            if (btn) {
+                btn.dataset.original = btn.innerHTML;
+                btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> COPIED`;
+                setTimeout(() => { btn.innerHTML = btn.dataset.original || btn.innerHTML; }, 1800);
+            }
+        }
+
+        function downloadResults(kind) {
+            const resultsArea = document.getElementById("results-area");
+            const rows = resultsArea.querySelectorAll("tr");
+            if (rows.length) {
+                let csv = "";
+                for (let r = 0; r < rows.length; r++) {
+                    const cells = rows[r].querySelectorAll("th, td");
+                    if (!cells.length) continue;
+                    const vals = [];
+                    for (const c of cells) vals.push(c.textContent.replace(/"/g, '""').trim());
+                    csv += vals.join(",") + "\n";
+                }
+                const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `data_agent_table_${Math.round(Date.now() / 1000)}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+                return;
+            }
+
+            const sql = currentResult && currentResult.sql ? currentResult.sql : null;
+            if (sql && sql.columns && sql.rows && sql.rows.length) {
+                const header = sql.columns.map(col => '"' + String(col).replace(/"/g, '""') + '"').join(",") + "\n";
+                const lines = sql.rows.map(row => sql.columns.map((_, i) => {
+                    const v = row[i];
+                    const s = (v == null || v === undefined) ? "" : String(v);
+                    return '"' + s.replace(/"/g, '""') + '"';
+                }).join(",")).join("\n");
+                const blob = new Blob([header + lines], { type: "text/csv;charset=utf-8" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.download = `data_agent_table_${Math.round(Date.now() / 1000)}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+                return;
+            }
+
+            if (kind === "etl" && currentResult && currentResult.etl && currentResult.etl.output_path) {
+                window.location.href = "/api/files/" + encodeURIComponent(currentResult.etl.output_path.split("/").slice(-2)[0]) + "/" + encodeURIComponent(currentResult.etl.output_path.split("/").slice(-1)[0]);
+                return;
+            }
+        }
+
+        /* ============================================================
+           Files view
+           ============================================================ */
+        async function loadFiles() {
+            const rowsEl = document.getElementById("files-rows");
+            const emptyEl = document.getElementById("files-empty");
+            const listEl = document.getElementById("files-list");
+            const countEl = document.getElementById("files-count");
+
+            try {
+                const res = await fetch("/api/files");
+                if (!res.ok) throw new Error("files fetch failed");
+                const body = await res.json();
+                const files = body.files || [];
+                countEl.textContent = `${files.length} file${files.length === 1 ? "" : "s"}`;
+                extractChip.textContent = `extract · ${files.filter(f => f.folder === "extract").length}`;
+                transformChip.textContent = `transform · ${files.filter(f => f.folder === "transform").length}`;
+
+                if (!files.length) {
+                    emptyEl.classList.remove("hidden");
+                    listEl.classList.add("hidden");
+                    return;
+                }
+                emptyEl.classList.add("hidden");
+                listEl.classList.remove("hidden");
+                rowsEl.innerHTML = "";
+                for (const f of files) {
+                    const tr = document.createElement("tr");
+                    tr.className = "hover:bg-surface-container-low transition-colors";
+                    const size = formatSize(f.size);
+                    const mod = new Date(f.modified).toLocaleString(undefined, {
+                        year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit"
+                    });
+                    tr.innerHTML = `
+                                <td class="py-space-sm px-space-md font-medium">${escapeHtml(f.name)}</td>
+                                <td class="py-space-sm px-space-md">${escapeHtml(f.folder)}</td>
+                                <td class="py-space-sm px-space-md text-right">${escapeHtml(size)}</td>
+                                <td class="py-space-sm px-space-md text-right text-secondary">${escapeHtml(mod)}</td>
+                                <td class="py-space-sm px-space-md">
+                                    <a class="inline-flex items-center gap-2 font-caption-mono text-caption-mono text-primary hover:text-on-surface bg-surface-container-low px-2 py-0.5 rounded border border-transparent hover:border-on-surface transition-colors"
+                                       href="/api/files/${encodeURIComponent(f.folder)}/${encodeURIComponent(f.name)}">
+                                        <span class="material-symbols-outlined text-[16px]">download</span>
+                                        Download
+                                    </a>
+                                </td>
+                            `;
+                    rowsEl.appendChild(tr);
+                }
+            } catch (e) {
+                countEl.textContent = "Could not load files";
+            }
+        }
+
+        const extractChip = document.getElementById("extract-chip");
+        const transformChip = document.getElementById("transform-chip");
+        loadFiles();
+
+        /* ============================================================
+           History view
+           ============================================================ */
+        async function loadHistory() {
+            const rowsEl = document.getElementById("history-rows");
+            const emptyEl = document.getElementById("history-empty");
+            const listEl = document.getElementById("history-list");
+            const countEl = document.getElementById("history-count");
+
+            try {
+                const res = await fetch("/api/history");
+                if (!res.ok) throw new Error("history fetch failed");
+                const body = await res.json();
+                const items = body.history || [];
+                countEl.textContent = `${items.length} entry${items.length === 1 ? "" : "s"}`;
+
+                if (!items.length) {
+                    emptyEl.classList.remove("hidden");
+                    listEl.classList.add("hidden");
+                    return;
+                }
+                emptyEl.classList.add("hidden");
+                listEl.classList.remove("hidden");
+                rowsEl.innerHTML = "";
+                for (const item of items) {
+                    const tr = document.createElement("tr");
+                    tr.className = "hover:bg-surface-container-low transition-colors";
+                    const when = timeAgo(new Date(item.timestamp));
+                    const route = (item.route || "").toUpperCase();
+                    tr.innerHTML = `
+                                <td class="py-space-sm px-space-md">
+                                    <button type="button" class="text-primary hover:text-on-surface underline underline-offset-2" data-question="${escapeHtml(item.question)}">${escapeHtml(item.question)}</button>
+                                </td>
+                                <td class="py-space-sm px-space-md font-label-tag text-caption-mono">${escapeHtml(route || "—")}</td>
+                                <td class="py-space-sm px-space-md text-secondary overflow-hidden">
+                                    <span class="block text-body-md line-clamp-2 align-top">${escapeHtml((item.answer || "").slice(0, 220) + (item.answer && item.answer.length > 220 ? "…" : ""))}</span>
+                                </td>
+                                <td class="py-space-sm px-space-md text-right text-secondary text-caption-mono">${escapeHtml(when)}</td>
+                            `;
+                    tr.querySelector("button[data-question]").addEventListener("click", () => {
+                        setQuery(tr.querySelector("button[data-question]").dataset.question || "");
+                    });
+                    rowsEl.appendChild(tr);
+                }
+            } catch (e) {
+                countEl.textContent = "Could not load history";
+            }
+        }
+
+        document.querySelector("[data-path=\"past-questions\"]") && loadHistory();
+        loadHistory();
+
+        /* ============================================================
+           Schema view
+           ============================================================ */
+        let schemaLoaded = false;
+        async function loadSchema() {
+            if (schemaLoaded) return;
+            const panel = document.getElementById("schema-panel");
+            try {
+                const res  = await fetch("/api/metadata");
+                const data = await res.json();
+                if (data.status !== "success" || !data.tables.length) {
+                    panel.innerHTML = `
+                        <div class="bg-surface-container-lowest border border-on-surface p-space-xl flex flex-col items-center gap-space-sm text-center">
+                            <span class="material-symbols-outlined text-error text-[28px]">error</span>
+                            <span class="font-caption-mono text-caption-mono text-secondary">${escapeHtml(data.message || "No tables found")}</span>
+                        </div>`;
+                    return;
+                }
+                panel.innerHTML = data.tables.map(buildSchemaCard).join("");
+                panel.querySelectorAll(".schema-card-header").forEach(h =>
+                    h.addEventListener("click", () => {
+                        const card = h.closest(".schema-card");
+                        const body = card.querySelector(".schema-card-body");
+                        const icon = h.querySelector(".schema-chevron");
+                        const open = !body.classList.contains("hidden");
+                        body.classList.toggle("hidden", open);
+                        icon.textContent = open ? "arrow_right" : "arrow_drop_down";
+                    })
+                );
+                schemaLoaded = true;
+            } catch (err) {
+                panel.innerHTML = `
+                    <div class="bg-surface-container-lowest border border-on-surface p-space-xl text-center">
+                        <p class="font-body-lg text-body-lg text-error">${escapeHtml(err.message)}</p>
+                    </div>`;
+            }
+        }
+
+        function buildSchemaCard(t) {
+            const rows = t.columns.map(c => `
+                <tr class="hover:bg-surface-container-low transition-colors border-t border-surface-dim">
+                    <td class="py-space-sm px-space-md font-medium font-data-tabular text-data-tabular">${escapeHtml(c.name)}</td>
+                    <td class="py-space-sm px-space-md">
+                        <span class="font-caption-mono text-caption-mono bg-surface-container px-space-xs py-0.5 border border-surface-dim text-secondary">${escapeHtml(c.type)}</span>
+                    </td>
+                    <td class="py-space-sm px-space-md font-caption-mono text-caption-mono ${c.nullable ? "text-secondary" : "text-error"}">${c.nullable ? "YES" : "NO"}</td>
+                    <td class="py-space-sm px-space-md text-secondary font-data-tabular text-data-tabular">${c.default ? escapeHtml(String(c.default)) : "—"}</td>
+                </tr>`).join("");
+            return `
+                <div class="schema-card bg-surface-container-lowest border border-on-surface">
+                    <div class="schema-card-header cursor-pointer p-space-md flex items-center justify-between hover:bg-surface-container-low transition-colors select-none">
+                        <div class="flex items-center gap-space-sm">
+                            <span class="material-symbols-outlined text-primary text-[18px]">table_rows</span>
+                            <span class="font-headline-md text-headline-md text-on-surface">${escapeHtml(t.table)}</span>
+                            <span class="font-label-tag text-label-tag text-primary border border-primary px-space-xs py-0.5">${Number(t.row_count).toLocaleString()} rows</span>
+                        </div>
+                        <div class="flex items-center gap-space-sm">
+                            <span class="font-caption-mono text-caption-mono text-secondary">${t.columns.length} col${t.columns.length === 1 ? "" : "s"}</span>
+                            <span class="material-symbols-outlined text-secondary schema-chevron">arrow_right</span>
+                        </div>
+                    </div>
+                    <div class="schema-card-body hidden border-t border-surface-dim overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-surface-container-low text-secondary font-label-uppercase text-label-uppercase">
+                                    <th class="py-space-sm px-space-md border-r border-surface-dim">Column</th>
+                                    <th class="py-space-sm px-space-md border-r border-surface-dim">Type</th>
+                                    <th class="py-space-sm px-space-md border-r border-surface-dim">Nullable</th>
+                                    <th class="py-space-sm px-space-md">Default</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-data-tabular text-data-tabular text-on-surface">${rows}</tbody>
+                        </table>
+                    </div>
+                </div>`;
+        }
+
+        async function clearHistory() {
+            try {
+                const res = await fetch("/api/history", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: "", route: "clear", answer: "" }) });
+                const body = await res.json();
+                if (body.status === "success") {
+                    document.getElementById("history-rows").innerHTML = "";
+                    document.getElementById("history-count").textContent = "0 entries";
+                    document.getElementById("history-empty").classList.remove("hidden");
+                    document.getElementById("history-list").classList.add("hidden");
+                }
+            } catch (e) {
+                /* noop */
+            }
+        }
+
+        /* ============================================================
+           Helpers
+           ============================================================ */
+        function escapeHtml(str) {
+            if (typeof str !== "string") str = String(str ?? "");
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function isNumericColumn(name) {
+            const normalized = (name || "").toLowerCase();
+            return /^(?:[_\-a-z0-9]+\s*)?(?:count|sum|avg|min|max|total|rating|fare|amount|distance|surge|year|age|price|quantity|score|rate|total_rides|total_payments|total_rides_\w+)$/.test(normalized);
+        }
+
+        function formatSize(bytes) {
+            if (bytes == null || isNaN(bytes)) return "—";
+            const units = ["B", "KB", "MB", "GB"];
+            let i = 0;
+            let v = Number(bytes);
+            while (v >= 1024 && i < units.length - 1) { v /= 1024; i++; }
+            return `${v.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+        }
+
+        function timeAgo(date) {
+            const diff = Date.now() - date.getTime();
+            const secs = Math.floor(diff / 1000);
+            if (secs < 60) return "just now";
+            const mins = Math.floor(secs / 60);
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            const days = Math.floor(hrs / 24);
+            return `${days}d ago`;
+        }
+    </script>
+</body>
+</html>

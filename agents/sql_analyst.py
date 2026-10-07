@@ -75,7 +75,11 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
 
     generated_sql_query = llm.invoke(prompt).content  # Generate the SQL query using the LLM
 
-    state.generated_sql_query = generated_sql_query
+    # Strip markdown formatting in case the LLM wrapped the output in ```sql ... ```
+    import re
+    clean_sql = re.sub(r"^```(?:sql)?\n?|\n?```$", "", generated_sql_query.strip(), flags=re.IGNORECASE)
+
+    state.generated_sql_query = clean_sql.strip()
 
     return state
 
@@ -132,8 +136,10 @@ def execute_sql(state: AgentSchema) -> AgentSchema:
     obj = DatabaseUtil(conn_details)
 
     execution_result = obj.execute_sql(sql_query)  # Execute the SQL query on the database
-
-    state.sql_query_execution_result = execution_result
+    # ``DatabaseUtil.execute_sql`` returns ``None`` on failure (and ``str(...)``
+    # on success). Keep the field a valid string so the downstream Pydantic
+    # state stays valid even when the database is unavailable.
+    state.sql_query_execution_result = execution_result if execution_result is not None else ""
 
     return state
 
@@ -158,7 +164,7 @@ def represent_final_answer(state: AgentSchema) -> AgentSchema:
 
     llm_response = llm.invoke(prompt).content  # Get the final answer from the LLM
 
-    state.final_answer = llm_response
+    state.final_answer = str(llm_response)
     state.messages = state.messages + [AIMessage(content=f"{llm_response}")]  # Append the final answer to the messages list
 
     return state
@@ -167,30 +173,46 @@ def represent_final_answer(state: AgentSchema) -> AgentSchema:
 # ------------------------------------------- Graph Building -------------------------------------------
 sql_agent_graph = StateGraph(AgentSchema)
 
-sql_agent_graph.add_node("Curate Question", curate_ques)
-sql_agent_graph.add_node("Prompt Query Context", prompt_query_context)
-sql_agent_graph.add_node("Generate SQL Query", generate_sql)
-sql_agent_graph.add_node("Is Safe SQL", is_safe_sql)   
-sql_agent_graph.add_node("Canceled SQL Query", canceled_sql)
-sql_agent_graph.add_node("Execute SQL Query", execute_sql)
-sql_agent_graph.add_node("Represent Final Answer", represent_final_answer)
+# Nodes
+sql_agent_graph.add_node("curate_ques", curate_ques)
+sql_agent_graph.add_node("prompt_query_context", prompt_query_context)
+sql_agent_graph.add_node("generate_sql", generate_sql)
+sql_agent_graph.add_node("is_safe_sql", is_safe_sql)
+sql_agent_graph.add_node("canceled_sql", canceled_sql)
+sql_agent_graph.add_node("execute_sql", execute_sql)
+sql_agent_graph.add_node("represent_final_answer", represent_final_answer)
 
+# Edges
+sql_agent_graph.add_edge(START, "curate_ques")
+sql_agent_graph.add_edge("curate_ques", "prompt_query_context")
+sql_agent_graph.add_edge("prompt_query_context", "generate_sql")
+sql_agent_graph.add_edge("generate_sql", "is_safe_sql")
 
-sql_agent_graph.add_edge("Curate Question", "Prompt Query Context")
-sql_agent_graph.add_edge("Prompt Query Context", "Generate SQL Query") 
-sql_agent_graph.add_edge("Generate SQL Query", "Is Safe SQL")
-sql_agent_graph.add_edge("Is Safe SQL", "Canceled SQL Query")
-
-def is_safe_sql_condition(state: AgentSchema) -> str:
+def is_safe_sql_edge(state: AgentSchema) -> str:
     if state.is_safe == "Yes":
-        return "execute_sql_query"
+        return "execute_sql"
     else:
-        return "canceled_sql_query"
+        return "canceled_sql"
 
-sql_agent_graph.add_edge("Is Safe SQL", "Execute SQL Query", condition=is_safe_sql_condition)
+sql_agent_graph.add_conditional_edges("is_safe_sql", is_safe_sql_edge,
+                                      {
+                                          "execute_sql": "execute_sql",
+                                          "canceled_sql": "canceled_sql"
+                                      })
+
+
+sql_agent_graph.add_edge("canceled_sql", END)
+sql_agent_graph.add_edge("execute_sql", "represent_final_answer")
+sql_agent_graph.add_edge("represent_final_answer", END)
 
 
 
+sql_analyst = sql_agent_graph.compile()
+
+from IPython.display import display, Image
+img = Image(sql_analyst.get_graph().draw_mermaid_png())
+with open("sql_analyst_graph.png", "wb") as f:
+    f.write(img.data)
 
 if __name__ == "__main__":
 
