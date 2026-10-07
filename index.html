@@ -165,7 +165,11 @@
                         <div class="mt-space-sm flex flex-col md:flex-row gap-0 border border-on-surface bg-surface-container-lowest">
                             <div class="relative flex-1 flex items-center">
                                 <span class="material-symbols-outlined text-secondary ml-space-md select-none text-[20px]">search</span>
-                                <input class="w-full px-space-md py-space-md font-body-lg text-body-lg text-on-surface bg-transparent focus:outline-none placeholder:text-secondary" id="query-input" placeholder="Type your question in plain English..." type="text"/>
+                                <button class="text-secondary hover:text-on-surface ml-3 flex items-center transition-colors" type="button" title="Attach file" onclick="document.getElementById('chat-file-upload').click()">
+                                    <span class="material-symbols-outlined text-[22px]">attach_file</span>
+                                </button>
+                                <input type="file" id="chat-file-upload" class="hidden" accept=".csv,.json,.parquet" onchange="handleChatFileUpload(event)">
+                                <input class="w-full pl-3 pr-space-md py-space-md font-body-lg text-body-lg text-on-surface bg-transparent focus:outline-none placeholder:text-secondary" id="query-input" placeholder="Type your question in plain English or attach a file..." type="text"/>
                                 <button class="ml-space-md px-space-md text-secondary hover:text-on-surface font-caption-mono text-caption-mono" type="button" onclick="document.getElementById('query-input').value = ''">[CLEAR]</button>
                             </div>
                             <button id="ask-button" class="bg-primary text-on-primary font-label-uppercase text-label-uppercase px-space-xl py-space-md uppercase tracking-wider hover:bg-primary-container transition-colors flex items-center justify-center gap-space-xs border-t md:border-t-0 md:border-l border-on-surface" type="button">
@@ -1156,6 +1160,39 @@
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
+                event.target.value = "";
+            }
+        }
+
+        async function handleChatFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const btn = event.target.previousElementSibling;
+            btn.classList.add("animate-pulse", "text-primary");
+            btn.classList.remove("text-secondary");
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const res = await fetch("/api/files/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                const body = await res.json();
+                if (res.ok && body.status === "success") {
+                    const input = document.getElementById("query-input");
+                    const prefix = `[Attached: ${body.path}] `;
+                    input.value = prefix + input.value;
+                    input.focus();
+                } else {
+                    alert("Upload failed: " + (body.message || "Unknown error"));
+                }
+            } catch (e) {
+                alert("Upload failed: " + e.message);
+            } finally {
+                btn.classList.remove("animate-pulse", "text-primary");
+                btn.classList.add("text-secondary");
                 event.target.value = "";
             }
         }

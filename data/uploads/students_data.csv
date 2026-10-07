@@ -1,0 +1,151 @@
+student_id,first_name,last_name,gender,date_of_birth,email,phone,department,year_of_study,enrollment_year,cgpa,attendance_percentage,city,state,hostel_resident,guardian_name,guardian_phone
+STU2024001,Vivaan,Choudhury,Male,11-10-2004,vivaan.choudhury001@college.edu.in,8332181960,Information Technology,2,2024,7.54,92.2,Indore,Madhya Pradesh,No,Anil Choudhury,6133890838
+STU2024002,Manav,Patel,Male,24-10-2005,manav.patel002@college.edu.in,6615594078,Computer Science,1,2025,7.4,99.4,Bhubaneswar,Odisha,Yes,Radha Patel,6618495931
+STU2024003,Payal,Saxena,Female,02-04-2003,payal.saxena003@college.edu.in,8255341928,Mechanical,4,2022,7.43,97.7,Guwahati,Assam,No,Alok Saxena,7276483503
+STU2024004,Payal,Mehta,Female,06-03-2004,payal.mehta004@college.edu.in,8238849696,Mechanical,2,2024,8.12,75.4,Varanasi,Uttar Pradesh,No,Arvind Mehta,8328710122
+STU2024005,Ayan,Mishra,Male,27-06-2004,ayan.mishra005@college.edu.in,8514627048,Information Technology,3,2023,8.56,79.5,Bengaluru,Karnataka,No,Sarita Mishra,7814893252
+STU2024006,Vihaan,Rao,Male,03-05-2004,vihaan.rao006@college.edu.in,6171822782,Information Technology,2,2024,6.9,69.9,Nagpur,Maharashtra,No,Arvind Rao,8896383465
+STU2024007,Nitin,Rao,Male,10-04-2005,nitin.rao007@college.edu.in,6103105183,Mechanical,1,2025,7.04,76.4,Bhubaneswar,Odisha,Yes,Rajendra Rao,8738299737
+STU2024008,Vihaan,Bhat,Male,30-04-2002,vihaan.bhat008@college.edu.in,8133387262,Civil,4,2022,6.79,66.7,Jodhpur,Rajasthan,No,Rakesh Bhat,8731781080
+STU2024009,Shaurya,Bhat,Male,24-12-2003,shaurya.bhat009@college.edu.in,6647468723,Information Technology,4,2022,8.76,63.2,Chennai,Tamil Nadu,Yes,Jitendra Bhat,8309805009
+STU2024010,Nikhil,Patel,Male,16-03-2003,nikhil.patel010@college.edu.in,7990916998,Information Technology,3,2023,9.41,60.4,Varanasi,Uttar Pradesh,Yes,Vijay Patel,8435346247
+STU2024011,Riya,Sen,Female,18-12-2003,riya.sen011@college.edu.in,8135427849,Computer Science,3,2023,7.87,70.6,Jodhpur,Rajasthan,No,Anita Sen,6841241182
+STU2024012,Ayush,Malhotra,Male,09-01-2006,ayush.malhotra012@college.edu.in,8005242786,Information Technology,1,2025,8.72,96,Kochi,Kerala,Yes,Usha Malhotra,6112805982
+STU2024013,Reyansh,Agarwal,Male,08-11-2004,reyansh.agarwal013@college.edu.in,9923226025,Mechanical,2,2024,8.28,68.9,Patna,Bihar,Yes,Prakash Agarwal,9342160733
+STU2024014,Yash,Agarwal,Male,15-02-2005,yash.agarwal014@college.edu.in,9850142940,Electrical,1,2025,5.85,88.4,Mumbai,Maharashtra,Yes,Rajesh Agarwal,6965569816
+STU2024015,Khushi,Reddy,Female,17-08-2006,khushi.reddy015@college.edu.in,6484656482,Information Technology,1,2025,6.88,77.7,Patna,Bihar,Yes,Sanjeev Reddy,7662994680
+STU2024016,Sai,Kumar,Male,06-01-2003,sai.kumar016@college.edu.in,8134332003,Computer Science,3,2023,7.01,95.7,Bhubaneswar,Odisha,Yes,Meena Kumar,9917693676
+STU2024017,Ketan,Deshmukh,Male,15-10-2006,ketan.deshmukh017@college.edu.in,6831727889,Computer Science,1,2025,7.23,79.4,Madurai,Tamil Nadu,No,Subhash Deshmukh,8798687277
+STU2024018,Priya,Nair,Female,13-12-2004,priya.nair018@college.edu.in,8581223623,Information Technology,3,2023,9.04,60.8,Guwahati,Assam,No,Ashok Nair,6665876036
+STU2024019,Trisha,Kapoor,Female,09-11-2004,trisha.kapoor019@college.edu.in,9889373467,Electrical,3,2023,8.77,65.4,Jaipur,Rajasthan,Yes,Rakesh Kapoor,6656272980
+STU2024020,Pooja,Deshmukh,Female,17-11-2006,pooja.deshmukh020@college.edu.in,8564641708,Computer Science,1,2025,7.72,64.6,Coimbatore,Tamil Nadu,No,Vikram Deshmukh,6531003309
+STU2024021,Isha,Das,Female,14-01-2005,isha.das021@college.edu.in,6241904966,Information Technology,2,2024,8.68,60.5,Siliguri,West Bengal,No,Ashok Das,7193149190
+STU2024022,Kavya,Iyer,Female,28-11-2004,kavya.iyer022@college.edu.in,7849877694,Information Technology,2,2024,8.05,67.3,Coimbatore,Tamil Nadu,No,Manju Iyer,8314737996
+STU2024023,Shalini,Pandey,Female,29-04-2004,shalini.pandey023@college.edu.in,8808313678,Information Technology,3,2023,6.72,99.9,Lucknow,Uttar Pradesh,No,Pradeep Pandey,7777014363
+STU2024024,Meera,Nair,Female,01-07-2006,meera.nair024@college.edu.in,7135182337,Computer Science,1,2025,7.23,65.1,Pune,Maharashtra,Yes,Subhash Nair,8989413435
+STU2024025,Tarun,Patel,Male,24-06-2001,tarun.patel025@college.edu.in,6947775204,Mechanical,4,2022,7.95,90.6,Varanasi,Uttar Pradesh,Yes,Radha Patel,9116719022
+STU2024026,Nandini,Kumar,Female,03-02-2004,nandini.kumar026@college.edu.in,9499091334,Electronics and Communication,2,2024,7.48,69.3,Indore,Madhya Pradesh,No,Pradeep Kumar,6232812067
+STU2024027,Rohan,Sen,Male,06-10-2003,rohan.sen027@college.edu.in,8936183242,Electronics and Communication,3,2023,6.45,63.2,Pune,Maharashtra,No,Manoj Sen,6024994717
+STU2024028,Diya,Gupta,Female,14-06-2003,diya.gupta028@college.edu.in,7990490278,Information Technology,3,2023,7.5,73.2,Indore,Madhya Pradesh,No,Rakesh Gupta,9429671756
+STU2024029,Varun,Gupta,Male,17-06-2003,varun.gupta029@college.edu.in,8451680876,Information Technology,4,2022,8.26,61.2,Noida,Uttar Pradesh,Yes,Sanjay Gupta,6385977034
+STU2024030,Tushar,Iyer,Male,23-05-2001,tushar.iyer030@college.edu.in,6317127484,Information Technology,4,2022,6.79,71,Kochi,Kerala,No,Sanjeev Iyer,9773782639
+STU2024031,Aadya,Kumar,Female,25-01-2005,aadya.kumar031@college.edu.in,8997278755,Information Technology,2,2024,6.5,92.8,Mysuru,Karnataka,No,Geeta Kumar,9753396360
+STU2024032,Aadhya,Kapoor,Female,12-03-2005,aadhya.kapoor032@college.edu.in,9187026217,Electrical,1,2025,8.37,69.4,Patna,Bihar,No,Rekha Kapoor,8596158657
+STU2024033,Aadhya,Shah,Female,09-05-2002,aadhya.shah033@college.edu.in,6724005045,Computer Science,4,2022,6.31,69.3,Noida,Uttar Pradesh,No,Jitendra Shah,8623869222
+STU2024034,Varun,Srivastava,Male,28-08-2002,varun.srivastava034@college.edu.in,8821759464,Electronics and Communication,4,2022,7.52,60.9,Thiruvananthapuram,Kerala,No,Anand Srivastava,9436713695
+STU2024035,Ansh,Choudhury,Male,24-07-2004,ansh.choudhury035@college.edu.in,9439533942,Information Technology,2,2024,8.26,98.9,Kota,Rajasthan,No,Seema Choudhury,6047095214
+STU2024036,Divya,Choudhury,Female,10-08-2001,divya.choudhury036@college.edu.in,8171236851,Mechanical,4,2022,8.33,87,Jodhpur,Rajasthan,Yes,Arvind Choudhury,9048175496
+STU2024037,Khushi,Rao,Female,29-02-2004,khushi.rao037@college.edu.in,6746120047,Electronics and Communication,3,2023,6.54,84.6,Hyderabad,Telangana,Yes,Vijay Rao,6138267586
+STU2024038,Nandini,Rao,Female,01-03-2002,nandini.rao038@college.edu.in,8158506431,Computer Science,4,2022,6.09,83.5,Thiruvananthapuram,Kerala,Yes,Anil Rao,9139005329
+STU2024039,Yash,Kapoor,Male,05-04-2006,yash.kapoor039@college.edu.in,7284210205,Computer Science,1,2025,7.69,64.4,Kota,Rajasthan,Yes,Anita Kapoor,7950240268
+STU2024040,Payal,Saxena,Female,29-10-2003,payal.saxena040@college.edu.in,6076617711,Information Technology,3,2023,6.44,78.1,Varanasi,Uttar Pradesh,No,Subhash Saxena,8921249985
+STU2024041,Tushar,Choudhury,Male,17-01-2006,tushar.choudhury041@college.edu.in,7673657661,Computer Science,1,2025,7.93,83.5,Lucknow,Uttar Pradesh,No,Satish Choudhury,8654527111
+STU2024042,Riddhi,Kapoor,Female,23-02-2001,riddhi.kapoor042@college.edu.in,6494519832,Mechanical,4,2022,6.44,84.4,Patna,Bihar,No,Prakash Kapoor,9315851493
+STU2024043,Kriti,Agarwal,Female,15-11-2001,kriti.agarwal043@college.edu.in,6229612018,Electronics and Communication,4,2022,8.19,87,Hyderabad,Telangana,No,Alok Agarwal,7667525459
+STU2024044,Ishita,Nair,Female,24-10-2003,ishita.nair044@college.edu.in,7815614978,Mechanical,3,2023,8.54,73.1,Mumbai,Maharashtra,No,Sunil Nair,8036900343
+STU2024045,Harsh,Chatterjee,Male,24-09-2005,harsh.chatterjee045@college.edu.in,7885160607,Computer Science,2,2024,6.17,74.5,Siliguri,West Bengal,Yes,Anand Chatterjee,6596966416
+STU2024046,Rhea,Gupta,Female,02-11-2004,rhea.gupta046@college.edu.in,9453521818,Electronics and Communication,3,2023,7.84,63,Chandigarh,Chandigarh,No,Anand Gupta,7552312432
+STU2024047,Simran,Saxena,Female,03-04-2005,simran.saxena047@college.edu.in,8527177449,Mechanical,1,2025,6.7,78.5,Lucknow,Uttar Pradesh,Yes,Sanjeev Saxena,6581477005
+STU2024048,Ritvik,Das,Male,12-12-2004,ritvik.das048@college.edu.in,9820715182,Electrical,2,2024,6.79,87.2,Pune,Maharashtra,No,Mahesh Das,6377889255
+STU2024049,Divya,Nair,Female,03-07-2004,divya.nair049@college.edu.in,7519254629,Information Technology,2,2024,8.28,90.6,Coimbatore,Tamil Nadu,Yes,Geeta Nair,6486528168
+STU2024050,Kabir,Kapoor,Male,04-04-2004,kabir.kapoor050@college.edu.in,6888059296,Civil,3,2023,7.25,69.4,Madurai,Tamil Nadu,No,Madhu Kapoor,7229270653
+STU2024051,Gautam,Mishra,Male,06-04-2006,gautam.mishra051@college.edu.in,9746886239,Computer Science,1,2025,7.92,77.5,Dehradun,Uttarakhand,Yes,Asha Mishra,7407581814
+STU2024052,Utkarsh,Verma,Male,08-02-2001,utkarsh.verma052@college.edu.in,9853615305,Electronics and Communication,4,2022,7.22,70.2,Thiruvananthapuram,Kerala,Yes,Harish Verma,6522047277
+STU2024053,Sneha,Shah,Female,04-09-2003,sneha.shah053@college.edu.in,8341036971,Information Technology,3,2023,6.98,86.7,Kota,Rajasthan,No,Vinod Shah,6798089324
+STU2024054,Harsh,Kapoor,Male,05-07-2004,harsh.kapoor054@college.edu.in,9065405153,Civil,2,2024,7.25,92.5,Nagpur,Maharashtra,No,Vijay Kapoor,6952058527
+STU2024055,Advait,Srivastava,Male,10-07-2004,advait.srivastava055@college.edu.in,6548687403,Electrical,2,2024,6.44,97,Kota,Rajasthan,No,Kalpana Srivastava,8505415667
+STU2024056,Ayush,Das,Male,28-04-2001,ayush.das056@college.edu.in,7845115447,Electronics and Communication,4,2022,7.53,63,Noida,Uttar Pradesh,No,Sanjeev Das,9275705964
+STU2024057,Vivaan,Mehta,Male,13-09-2003,vivaan.mehta057@college.edu.in,9021355690,Information Technology,3,2023,7.7,67.4,Kota,Rajasthan,No,Suman Mehta,7755719285
+STU2024058,Shreya,Pandey,Female,18-12-2004,shreya.pandey058@college.edu.in,9394731217,Mechanical,3,2023,7.45,85.5,Kochi,Kerala,No,Mahesh Pandey,7715518844
+STU2024059,Krishna,Rao,Male,16-03-2004,krishna.rao059@college.edu.in,9058957829,Computer Science,2,2024,6.21,73.8,Guwahati,Assam,Yes,Geeta Rao,6146786691
+STU2024060,Akshara,Sen,Female,29-08-2004,akshara.sen060@college.edu.in,6182422535,Computer Science,3,2023,7.92,97.7,Mysuru,Karnataka,Yes,Harish Sen,8143842498
+STU2024061,Simran,Verma,Female,02-03-2006,simran.verma061@college.edu.in,6109439690,Electronics and Communication,1,2025,6.89,84.3,Surat,Gujarat,No,Brijesh Verma,9844736471
+STU2024062,Bhavya,Mehta,Female,03-10-2002,bhavya.mehta062@college.edu.in,8881537147,Mechanical,4,2022,7.56,67.6,Chennai,Tamil Nadu,No,Savitri Mehta,7210469632
+STU2024063,Meera,Kulkarni,Female,10-01-2006,meera.kulkarni063@college.edu.in,6168733950,Computer Science,1,2025,7.57,76,Kanpur,Uttar Pradesh,Yes,Sanjay Kulkarni,6479748016
+STU2024064,Harsh,Mukherjee,Male,08-12-2005,harsh.mukherjee064@college.edu.in,9849912165,Computer Science,1,2025,6.64,92.2,Kota,Rajasthan,No,Vinod Mukherjee,8852398680
+STU2024065,Ritvik,Sen,Male,24-02-2001,ritvik.sen065@college.edu.in,8269495888,Information Technology,4,2022,6.92,86.2,Chandigarh,Chandigarh,Yes,Anand Sen,9947055169
+STU2024066,Isha,Mukherjee,Female,09-11-2004,isha.mukherjee066@college.edu.in,9230913075,Information Technology,3,2023,7.1,79.1,Kolkata,West Bengal,No,Savitri Mukherjee,9263689702
+STU2024067,Tara,Agarwal,Female,09-02-2004,tara.agarwal067@college.edu.in,8973348434,Electronics and Communication,3,2023,8.43,92.2,Ahmedabad,Gujarat,Yes,Subhash Agarwal,8375758441
+STU2024068,Vikrant,Sen,Male,28-04-2005,vikrant.sen068@college.edu.in,9473384842,Computer Science,2,2024,5.47,64,Chandigarh,Chandigarh,Yes,Arvind Sen,6993308330
+STU2024069,Utkarsh,Saxena,Male,20-04-2003,utkarsh.saxena069@college.edu.in,9734540193,Computer Science,3,2023,8.23,78.2,Noida,Uttar Pradesh,No,Geeta Saxena,6262067240
+STU2024070,Tanvi,Singh,Female,28-11-2005,tanvi.singh070@college.edu.in,6527420549,Computer Science,1,2025,7.15,97.4,Mumbai,Maharashtra,No,Pradeep Singh,7296685161
+STU2024071,Kriti,Kumar,Female,05-02-2003,kriti.kumar071@college.edu.in,6453017426,Information Technology,4,2022,6.52,78.8,Lucknow,Uttar Pradesh,Yes,Rekha Kumar,8145933272
+STU2024072,Rhea,Pandey,Female,26-02-2004,rhea.pandey072@college.edu.in,8191088398,Electrical,2,2024,8.07,78.1,Kota,Rajasthan,No,Suresh Pandey,7258713971
+STU2024073,Meera,Choudhury,Female,11-05-2003,meera.choudhury073@college.edu.in,6640391065,Mechanical,4,2022,6.16,77.9,Dehradun,Uttarakhand,No,Jitendra Choudhury,6801704622
+STU2024074,Vikrant,Patel,Male,26-04-2003,vikrant.patel074@college.edu.in,7868230047,Electrical,3,2023,8.85,61.3,Patna,Bihar,No,Ramesh Patel,9863375243
+STU2024075,Pranav,Gupta,Male,25-11-2003,pranav.gupta075@college.edu.in,6907903067,Electronics and Communication,3,2023,7.65,99.4,Kota,Rajasthan,Yes,Prakash Gupta,7830284395
+STU2024076,Tushar,Banerjee,Male,20-04-2006,tushar.banerjee076@college.edu.in,7687056856,Mechanical,1,2025,9.33,96.6,Lucknow,Uttar Pradesh,No,Vimla Banerjee,9246287334
+STU2024077,Harsh,Rao,Male,13-11-2002,harsh.rao077@college.edu.in,8351751830,Information Technology,4,2022,6.85,68.5,Coimbatore,Tamil Nadu,Yes,Vikram Rao,8699013983
+STU2024078,Priya,Pandey,Female,30-07-2005,priya.pandey078@college.edu.in,7638546785,Information Technology,2,2024,9.36,94.6,Bhopal,Madhya Pradesh,Yes,Arvind Pandey,8458771753
+STU2024079,Divya,Mehta,Female,19-10-2004,divya.mehta079@college.edu.in,7536937854,Electrical,3,2023,8.56,93.6,Nagpur,Maharashtra,Yes,Kalpana Mehta,9772522872
+STU2024080,Rohan,Gupta,Male,29-05-2005,rohan.gupta080@college.edu.in,7038750997,Information Technology,2,2024,7.21,92.5,Patna,Bihar,No,Pushpa Gupta,9008860084
+STU2024081,Reyansh,Mukherjee,Male,02-05-2005,reyansh.mukherjee081@college.edu.in,7339845461,Information Technology,2,2024,7.62,66.9,Jodhpur,Rajasthan,No,Dinesh Mukherjee,8679334101
+STU2024082,Ketan,Sen,Male,03-02-2006,ketan.sen082@college.edu.in,6339740148,Computer Science,1,2025,7.54,87.1,Lucknow,Uttar Pradesh,No,Harish Sen,6250392614
+STU2024083,Sai,Mukherjee,Male,07-11-2004,sai.mukherjee083@college.edu.in,8016315999,Information Technology,3,2023,6.37,71.8,Madurai,Tamil Nadu,Yes,Anil Mukherjee,9504773586
+STU2024084,Kavya,Choudhury,Female,22-07-2006,kavya.choudhury084@college.edu.in,9551104754,Computer Science,1,2025,8.56,63.7,Varanasi,Uttar Pradesh,No,Sunita Choudhury,6212678886
+STU2024085,Ishita,Bhat,Female,15-09-2005,ishita.bhat085@college.edu.in,6839826224,Information Technology,1,2025,8.85,79.8,Varanasi,Uttar Pradesh,Yes,Anil Bhat,8472126464
+STU2024086,Aadya,Bhat,Female,30-10-2002,aadya.bhat086@college.edu.in,8965756924,Civil,4,2022,7.01,75,Thiruvananthapuram,Kerala,No,Anand Bhat,8937526547
+STU2024087,Nitin,Chatterjee,Male,02-06-2005,nitin.chatterjee087@college.edu.in,7807374167,Information Technology,2,2024,9.11,76.7,Pune,Maharashtra,No,Sanjeev Chatterjee,7434266179
+STU2024088,Reyansh,Shah,Male,26-11-2005,reyansh.shah088@college.edu.in,7529096561,Information Technology,2,2024,6.66,83.5,Kota,Rajasthan,Yes,Ramesh Shah,6143888993
+STU2024089,Aadhya,Kumar,Female,18-12-2005,aadhya.kumar089@college.edu.in,9112545738,Mechanical,1,2025,6.69,66.6,Bhopal,Madhya Pradesh,Yes,Arvind Kumar,9571775140
+STU2024090,Manav,Chatterjee,Male,18-01-2002,manav.chatterjee090@college.edu.in,9736226609,Electronics and Communication,4,2022,6.42,74.6,Coimbatore,Tamil Nadu,No,Jitendra Chatterjee,7796603341
+STU2024091,Rhea,Saxena,Female,24-05-2004,rhea.saxena091@college.edu.in,8969691557,Computer Science,2,2024,6.57,65.5,Kolkata,West Bengal,No,Rajendra Saxena,7499125134
+STU2024092,Tushar,Joshi,Male,20-06-2004,tushar.joshi092@college.edu.in,9422579050,Electronics and Communication,2,2024,7.44,63.3,Mumbai,Maharashtra,Yes,Prakash Joshi,9236887676
+STU2024093,Abhinav,Kumar,Male,27-09-2005,abhinav.kumar093@college.edu.in,7797881914,Electrical,1,2025,6.54,77.6,Bengaluru,Karnataka,Yes,Harish Kumar,8807836134
+STU2024094,Khushi,Saxena,Female,08-04-2003,khushi.saxena094@college.edu.in,9292330958,Civil,3,2023,8.85,65.4,Chandigarh,Chandigarh,No,Seema Saxena,8982544948
+STU2024095,Krishna,Rao,Male,10-07-2001,krishna.rao095@college.edu.in,7536729466,Electronics and Communication,4,2022,7.38,86.6,Vadodara,Gujarat,Yes,Radha Rao,9116845775
+STU2024096,Ayush,Malhotra,Male,27-05-2003,ayush.malhotra096@college.edu.in,7745458929,Information Technology,4,2022,6.51,68.1,Indore,Madhya Pradesh,Yes,Sarita Malhotra,9500170127
+STU2024097,Yash,Gupta,Male,14-12-2006,yash.gupta097@college.edu.in,8415206436,Electronics and Communication,1,2025,7.25,94.4,Indore,Madhya Pradesh,Yes,Ajay Gupta,6103712938
+STU2024098,Anaya,Choudhury,Female,13-04-2005,anaya.choudhury098@college.edu.in,6155426221,Mechanical,1,2025,7.88,65.6,Bengaluru,Karnataka,No,Satish Choudhury,6927532697
+STU2024099,Riya,Rao,Female,16-10-2006,riya.rao099@college.edu.in,8138999404,Information Technology,1,2025,6.58,99.1,Vadodara,Gujarat,No,Brijesh Rao,7898364037
+STU2024100,Swara,Chatterjee,Female,27-03-2005,swara.chatterjee100@college.edu.in,7710910430,Information Technology,1,2025,6.89,72.4,Kota,Rajasthan,Yes,Geeta Chatterjee,6684866618
+STU2024101,Bhavya,Banerjee,Female,15-06-2002,bhavya.banerjee101@college.edu.in,6463031617,Information Technology,4,2022,7.73,91.2,Hyderabad,Telangana,Yes,Sunita Banerjee,6421020275
+STU2024102,Riddhi,Nair,Female,16-05-2002,riddhi.nair102@college.edu.in,6491778507,Computer Science,4,2022,7.91,61.8,Vadodara,Gujarat,No,Pushpa Nair,7524191380
+STU2024103,Tushar,Trivedi,Male,15-11-2003,tushar.trivedi103@college.edu.in,9353654195,Mechanical,3,2023,6.97,60.3,Coimbatore,Tamil Nadu,No,Sanjay Trivedi,6802380617
+STU2024104,Varun,Agarwal,Male,19-10-2001,varun.agarwal104@college.edu.in,9383206038,Information Technology,4,2022,8.51,88.5,Nagpur,Maharashtra,Yes,Lata Agarwal,8050641383
+STU2024105,Swara,Deshmukh,Female,27-07-2005,swara.deshmukh105@college.edu.in,6918261990,Computer Science,1,2025,8.51,64.4,Bengaluru,Karnataka,Yes,Dinesh Deshmukh,9234456557
+STU2024106,Sneha,Chatterjee,Female,28-06-2005,sneha.chatterjee106@college.edu.in,8374741124,Electronics and Communication,1,2025,8.66,61.2,Kolkata,West Bengal,No,Arvind Chatterjee,6352135680
+STU2024107,Reyansh,Deshmukh,Male,11-11-2002,reyansh.deshmukh107@college.edu.in,6210032365,Computer Science,4,2022,9.04,62,Dehradun,Uttarakhand,No,Radha Deshmukh,6994101372
+STU2024108,Diya,Bhat,Female,23-06-2006,diya.bhat108@college.edu.in,9253244720,Computer Science,1,2025,9,70,Kochi,Kerala,Yes,Asha Bhat,7476870146
+STU2024109,Tara,Trivedi,Female,30-09-2003,tara.trivedi109@college.edu.in,9598564205,Computer Science,3,2023,5.94,89.5,Chandigarh,Chandigarh,Yes,Sanjeev Trivedi,7040785932
+STU2024110,Sonakshi,Sen,Female,21-01-2003,sonakshi.sen110@college.edu.in,7239559059,Computer Science,3,2023,7.17,81.1,Mumbai,Maharashtra,No,Usha Sen,7937842701
+STU2024111,Manav,Pandey,Male,16-10-2005,manav.pandey111@college.edu.in,7500292185,Electronics and Communication,2,2024,8.76,67,Lucknow,Uttar Pradesh,No,Anand Pandey,6569154522
+STU2024112,Harsh,Kumar,Male,13-10-2005,harsh.kumar112@college.edu.in,8220969029,Information Technology,2,2024,7.18,95.4,Nagpur,Maharashtra,No,Prakash Kumar,8939172513
+STU2024113,Siddharth,Pandey,Male,04-02-2005,siddharth.pandey113@college.edu.in,6541006762,Computer Science,1,2025,7.28,98.1,Nagpur,Maharashtra,No,Rakesh Pandey,9765861793
+STU2024114,Arjun,Chatterjee,Male,08-04-2004,arjun.chatterjee114@college.edu.in,6599706296,Electronics and Communication,2,2024,8.26,62,Kanpur,Uttar Pradesh,No,Ashok Chatterjee,7015336884
+STU2024115,Ayush,Gupta,Male,27-01-2003,ayush.gupta115@college.edu.in,8973103241,Computer Science,4,2022,7.61,77.6,Hyderabad,Telangana,Yes,Kiran Gupta,9146774186
+STU2024116,Ishan,Shah,Male,29-10-2001,ishan.shah116@college.edu.in,6158693806,Information Technology,4,2022,7.75,64.8,Chandigarh,Chandigarh,No,Sunil Shah,9879374160
+STU2024117,Advait,Mehta,Male,19-06-2004,advait.mehta117@college.edu.in,6616329451,Mechanical,3,2023,7.59,66,Kanpur,Uttar Pradesh,Yes,Kiran Mehta,6686854870
+STU2024118,Kabir,Kapoor,Male,02-10-2004,kabir.kapoor118@college.edu.in,8646799702,Computer Science,2,2024,7.07,95.9,Mumbai,Maharashtra,No,Sarita Kapoor,8629960653
+STU2024119,Tanvi,Malhotra,Female,28-12-2006,tanvi.malhotra119@college.edu.in,9132475469,Mechanical,1,2025,7.01,94.1,Guwahati,Assam,Yes,Raman Malhotra,6373678508
+STU2024120,Vihaan,Rao,Male,21-09-2004,vihaan.rao120@college.edu.in,6705345786,Electronics and Communication,2,2024,7.48,90,Indore,Madhya Pradesh,Yes,Rakesh Rao,6035797279
+STU2024121,Shaurya,Kapoor,Male,30-07-2003,shaurya.kapoor121@college.edu.in,7333468007,Electrical,4,2022,7.49,87.1,Thiruvananthapuram,Kerala,No,Ramesh Kapoor,7290349446
+STU2024122,Nisha,Saxena,Female,30-10-2003,nisha.saxena122@college.edu.in,8417154544,Electronics and Communication,3,2023,8.51,70.4,Siliguri,West Bengal,No,Suresh Saxena,8328309652
+STU2024123,Manav,Choudhury,Male,12-05-2003,manav.choudhury123@college.edu.in,7875842824,Computer Science,4,2022,7.69,70.4,Ahmedabad,Gujarat,No,Madhu Choudhury,6724825135
+STU2024124,Nitin,Banerjee,Male,08-10-2005,nitin.banerjee124@college.edu.in,6738168460,Mechanical,2,2024,6.72,99.5,Surat,Gujarat,Yes,Prakash Banerjee,7235697252
+STU2024125,Shaurya,Banerjee,Male,12-09-2005,shaurya.banerjee125@college.edu.in,7712966667,Computer Science,1,2025,7.77,72.5,Bengaluru,Karnataka,No,Sanjay Banerjee,9008350583
+STU2024126,Arjun,Malhotra,Male,01-06-2006,arjun.malhotra126@college.edu.in,6447898562,Computer Science,1,2025,9.32,66.8,Vadodara,Gujarat,Yes,Rajendra Malhotra,8753260332
+STU2024127,Tara,Das,Female,13-09-2006,tara.das127@college.edu.in,6901001676,Electronics and Communication,1,2025,7.21,95.9,Kota,Rajasthan,Yes,Sanjeev Das,6847230461
+STU2024128,Tarun,Singh,Male,03-04-2005,tarun.singh128@college.edu.in,7483564208,Electronics and Communication,1,2025,6.61,91.2,Nagpur,Maharashtra,Yes,Meena Singh,9375300119
+STU2024129,Divya,Nair,Female,17-12-2005,divya.nair129@college.edu.in,9012045561,Electrical,1,2025,7.87,98.5,Hyderabad,Telangana,No,Alok Nair,6002255794
+STU2024130,Isha,Patel,Female,18-11-2005,isha.patel130@college.edu.in,7021697972,Computer Science,1,2025,8.33,60.5,Bhubaneswar,Odisha,Yes,Manju Patel,9590277167
+STU2024131,Ayush,Mishra,Male,23-01-2004,ayush.mishra131@college.edu.in,7756289002,Information Technology,3,2023,6.96,78.4,Kochi,Kerala,No,Alok Mishra,9721753540
+STU2024132,Aditi,Patel,Female,06-09-2004,aditi.patel132@college.edu.in,9016608801,Information Technology,3,2023,7.88,78.9,Patna,Bihar,No,Mahesh Patel,8883755037
+STU2024133,Rohan,Sharma,Male,24-11-2002,rohan.sharma133@college.edu.in,8548851027,Information Technology,4,2022,8.23,97.1,Thiruvananthapuram,Kerala,Yes,Savitri Sharma,7614933163
+STU2024134,Deepika,Mukherjee,Female,15-09-2005,deepika.mukherjee134@college.edu.in,7708086978,Electrical,2,2024,8.08,96.6,Chandigarh,Chandigarh,Yes,Dinesh Mukherjee,7922169958
+STU2024135,Nandini,Trivedi,Female,29-07-2004,nandini.trivedi135@college.edu.in,7269848583,Electronics and Communication,3,2023,6.34,86.7,Siliguri,West Bengal,No,Kalpana Trivedi,7394522885
+STU2024136,Ketan,Patel,Male,18-08-2003,ketan.patel136@college.edu.in,6620034244,Mechanical,3,2023,7.64,89.7,Lucknow,Uttar Pradesh,No,Sanjeev Patel,7043805719
+STU2024137,Ananya,Sen,Female,11-07-2003,ananya.sen137@college.edu.in,9665800439,Computer Science,3,2023,8.93,64.8,Pune,Maharashtra,No,Prakash Sen,9359893347
+STU2024138,Shaurya,Banerjee,Male,23-11-2001,shaurya.banerjee138@college.edu.in,8057202590,Information Technology,4,2022,7.16,76.6,Lucknow,Uttar Pradesh,No,Ajay Banerjee,8798515832
+STU2024139,Manav,Reddy,Male,26-01-2003,manav.reddy139@college.edu.in,8439878015,Computer Science,3,2023,8.92,75,Kochi,Kerala,No,Sanjay Reddy,9399305616
+STU2024140,Ritvik,Mukherjee,Male,15-09-2005,ritvik.mukherjee140@college.edu.in,6128801336,Computer Science,1,2025,6.62,82.3,Kanpur,Uttar Pradesh,Yes,Kalpana Mukherjee,6386120750
+STU2024141,Nandini,Saxena,Female,08-02-2005,nandini.saxena141@college.edu.in,9650618091,Mechanical,2,2024,7.6,66.3,Madurai,Tamil Nadu,Yes,Sanjeev Saxena,6158144914
+STU2024142,Kavya,Kumar,Female,24-09-2006,kavya.kumar142@college.edu.in,8088210099,Computer Science,1,2025,7.3,93.4,Coimbatore,Tamil Nadu,Yes,Sanjeev Kumar,9881435368
+STU2024143,Tushar,Deshmukh,Male,11-12-2004,tushar.deshmukh143@college.edu.in,6414139755,Information Technology,3,2023,6.5,74.6,Surat,Gujarat,No,Dinesh Deshmukh,7314913577
+STU2024144,Rohan,Pandey,Male,06-06-2001,rohan.pandey144@college.edu.in,9452577754,Computer Science,4,2022,6.91,89.1,Guwahati,Assam,Yes,Sunita Pandey,9812914283
+STU2024145,Deepika,Singh,Female,06-12-2001,deepika.singh145@college.edu.in,6848872563,Electronics and Communication,4,2022,7.52,66.4,Kanpur,Uttar Pradesh,Yes,Alok Singh,8278816580
+STU2024146,Saanvi,Rao,Female,21-01-2004,saanvi.rao146@college.edu.in,9314530385,Electronics and Communication,3,2023,7.01,86.1,Vadodara,Gujarat,Yes,Rakesh Rao,9770051844
+STU2024147,Ketan,Bhat,Male,24-08-2005,ketan.bhat147@college.edu.in,8577908272,Electronics and Communication,1,2025,6.81,64.5,Patna,Bihar,No,Anand Bhat,7184322259
+STU2024148,Utkarsh,Sharma,Male,18-10-2003,utkarsh.sharma148@college.edu.in,7029922809,Electrical,3,2023,7.91,97.9,Coimbatore,Tamil Nadu,No,Alok Sharma,7024286990
+STU2024149,Isha,Rao,Female,30-10-2003,isha.rao149@college.edu.in,9929298425,Computer Science,4,2022,6.82,84.2,Chennai,Tamil Nadu,No,Anita Rao,9991366210
+STU2024150,Sai,Kulkarni,Male,27-03-2003,sai.kulkarni150@college.edu.in,7980686508,Computer Science,3,2023,5.96,71.3,Guwahati,Assam,No,Ramesh Kulkarni,9376599162
