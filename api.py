@@ -377,7 +377,7 @@ async def download_file(folder: str, name: str):
 
 @app.get("/images/{name}")
 async def serve_image(name: str):
-    if name in ["data_agent_graph.png", "sql_analyst_graph.png"]:
+    if name in ["data_agent_graph.png", "sql_analyst_graph.png", "etl_analyst_graph.png"]:
         path = BASE_DIR / name
         if path.exists():
             return FileResponse(path)
