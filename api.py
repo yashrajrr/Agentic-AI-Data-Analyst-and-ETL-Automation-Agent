@@ -8,6 +8,7 @@ import time
 import mimetypes
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 import psycopg2
 from dotenv import dotenv_values
 
@@ -134,7 +135,7 @@ def extract_sql_payload(state):
     comments = state.get("comments") or ""
     answer = state.get("final_answer") or ""
 
-    table: dict[str, object] = {"columns": [], "rows": [], "row_count": 0, "error": None}
+    table: dict[str, Any] = {"columns": [], "rows": [], "row_count": 0, "error": None}
     if generated_sql and is_safe == "Yes":
         table = structured_query(generated_sql)
 
@@ -298,7 +299,7 @@ async def ask_question(request: Request):
     messages = response.get("messages", [])
     last = messages[-1] if messages else None
 
-    payload = {
+    payload: dict[str, Any] = {
         "status": "success",
         "route": route,
         "answer": "",
@@ -376,11 +377,12 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         target_dir = DATA_DIR / "uploads"
         target_dir.mkdir(parents=True, exist_ok=True)
-        target_path = target_dir / file.filename
+        safe_filename = file.filename or "upload.tmp"
+        target_path = target_dir / safe_filename
         content = await file.read()
         with open(target_path, "wb") as f:
             f.write(content)
-        return {"status": "success", "path": f"data/uploads/{file.filename}"}
+        return {"status": "success", "path": f"data/uploads/{safe_filename}"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -460,7 +462,8 @@ async def get_metadata():
             cur.execute(
                 f'SELECT COUNT(*) FROM public."{table}"'  # noqa: S608
             )
-            row_count = cur.fetchone()[0]
+            row = cur.fetchone()
+            row_count = row[0] if row else 0
 
             result.append({
                 "table": table,

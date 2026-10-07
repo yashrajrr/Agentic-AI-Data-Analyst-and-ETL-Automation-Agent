@@ -73,10 +73,15 @@ def transform_load_tool(input_file_path:str,output_folder:str,output_format:str,
 
         """
 
-    response = llm.invoke(prompt).content 
+    response_message = llm.invoke(prompt)
+    content = response_message.content
+    if isinstance(content, list):
+        content = content[0].get("text", str(content)) if isinstance(content[0], dict) else str(content[0])  # type: ignore
+    elif not isinstance(content, str):
+        content = str(content)
 
     # Optional Cleaning
-    pandas_code = response.strip().strip('```').strip().lstrip('python').strip()
+    pandas_code = content.strip().strip('```').strip().lstrip('python').strip()
 
     # Execute the Pandas code
     results = etl_tools.execute_code(pandas_code)
@@ -167,10 +172,9 @@ if __name__ == "__main__":
     
 
     # Optional
-    from IPython.display import display, Image
-    img = Image(etl_analyst.get_graph().draw_mermaid_png())
+    png_data = etl_analyst.get_graph().draw_mermaid_png()
     with open("etl_analyst_graph.png", "wb") as f:
-        f.write(img.data)
+        f.write(png_data)
 
     response = etl_analyst.invoke(
         {"messages":[HumanMessage(content="I want to extract the data from the API endpoint 'https://pokeapi.co/api/v2/pokemon' and save it to data/extract folder in the csv folder")]}

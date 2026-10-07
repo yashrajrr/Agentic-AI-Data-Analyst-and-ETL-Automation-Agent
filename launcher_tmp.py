@@ -16,8 +16,10 @@ print("uvicorn pid", proc.pid, flush=True)
 try:
     proc.wait(timeout=120)
     print("uvicorn exited", proc.returncode, flush=True)
-    print(proc.stdout.read(), flush=True)
+    if proc.stdout:
+        print(proc.stdout.read(), flush=True)
 except subprocess.TimeoutExpired:
     print("uvicorn still running after 120s", flush=True)
     proc.kill()
-    print(proc.stdout.read(), flush=True)
+    if proc.stdout:
+        print(proc.stdout.read(), flush=True)

@@ -413,9 +413,8 @@ for table in tables:
             sql.Identifier(table)
         )
     )
-
-    count = cursor.fetchone()[0]
-
+    row = cursor.fetchone()
+    count = row[0] if row else 0
     print(f"{table:<15} {count:>10,}")
 
 
