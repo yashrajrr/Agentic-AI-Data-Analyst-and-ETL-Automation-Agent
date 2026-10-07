@@ -1,0 +1,15 @@
+.env
+.env.*
+.git
+.agents
+.codex
+.aws
+__pycache__/
+*.pyc
+.venv/
+venv/
+data/
+*.csv
+*.log
+*.tmp
+test_schema_details.txt

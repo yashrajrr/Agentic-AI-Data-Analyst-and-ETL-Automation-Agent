@@ -3,22 +3,14 @@ import csv
 import psycopg2
 from psycopg2 import sql
 from dotenv import load_dotenv
+from utils.config import get_db_config
 load_dotenv()
-
-if 'port' not in os.environ:
-    os.environ['port'] = '5432'
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
 
-DB_CONFIG = {
-    "host": os.environ['host'],
-    "port": int(os.environ['port']),
-    "database": os.environ['database'],
-    "user": os.environ['user'],
-    "password": os.environ['password'],
-}
+DB_CONFIG = get_db_config()
 
 CSV_DIR = "data"
 

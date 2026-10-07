@@ -55,6 +55,15 @@ POSTGRES_PORT=5432
 ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
+For Vercel + Supabase, prefer a Supabase pooled Postgres connection string:
+
+```env
+DATABASE_URL=postgresql://postgres.<project-ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres?sslmode=require
+OPENROUTER_API_KEY=your_openrouter_api_key
+```
+
+The app also still supports the local `host`, `port`, `database`, `user`, and `password` variables.
+
 ### 4. Run the Application
 
 Start the FastAPI application via the `main.py` entry point:
@@ -65,6 +74,26 @@ python main.py
 *(Alternatively, you can run `uvicorn api:app --reload`)*
 
 The application will start on `http://localhost:8000`.
+
+## Deploy to Vercel with Supabase
+
+1. Create a Supabase project and copy the pooled Postgres connection string from Project Settings -> Database.
+2. Seed Supabase from this project:
+
+```bash
+DATABASE_URL="<your-supabase-postgres-url>" python feed_db.py
+```
+
+3. Log in and deploy with Vercel:
+
+```bash
+npx vercel login
+npx vercel env add DATABASE_URL production
+npx vercel env add OPENROUTER_API_KEY production
+npx vercel deploy --prod
+```
+
+`.vercelignore` excludes local datasets and `.env` files from the upload. Runtime file uploads/history on Vercel are ephemeral; keep durable data in Supabase or another external store.
 
 ### 5. Using the Application
 

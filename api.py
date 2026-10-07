@@ -19,6 +19,7 @@ for _k, _v in _venv_dotenv.items():
 from langchain_core.messages import HumanMessage, ToolMessage, AIMessage
 from agents.data_agent import data_agent
 from utils.database import DatabaseUtil
+from utils.config import get_db_config, get_display_database_name
 
 app = FastAPI(title="Data Agent API")
 
@@ -40,16 +41,6 @@ ALLOWED_FOLDERS = {"extract", "transform", "uploads"}
 
 
 # ----------------------------- DATABASE HELPERS ----------------------------- #
-
-def get_db_config():
-    return {
-        "host": os.environ.get("host", "localhost"),
-        "port": int(os.environ.get("port", 5432)),
-        "user": os.environ.get("user"),
-        "password": os.environ.get("password"),
-        "dbname": os.environ.get("database"),
-    }
-
 
 def structured_query(sql):
     """Run a query and return a JSON-safe tabular result (never raises)."""
@@ -220,13 +211,7 @@ async def serve_ui():
 @app.get("/api/db-info")
 async def get_db_info():
     try:
-        conn = psycopg2.connect(
-            host=os.environ.get("host", "localhost"),
-            port=int(os.environ.get("port", 5432)),
-            database=os.environ.get("database"),
-            user=os.environ.get("user"),
-            password=os.environ.get("password"),
-        )
+        conn = psycopg2.connect(**get_db_config())
         cursor = conn.cursor()
 
         cursor.execute("""
@@ -253,7 +238,7 @@ async def get_db_info():
             "status": "success",
             "connected": True,
             "server": "PostgreSQL",
-            "database": os.environ.get("database"),
+            "database": get_display_database_name(),
             "tables": db_metadata,
         }
     except Exception as e:
@@ -415,13 +400,7 @@ async def serve_image(name: str):
 async def get_metadata():
     """Return column-level metadata + row counts for every public table."""
     try:
-        conn = psycopg2.connect(
-            host=os.environ.get("host", "localhost"),
-            port=int(os.environ.get("port", 5432)),
-            database=os.environ.get("database"),
-            user=os.environ.get("user"),
-            password=os.environ.get("password"),
-        )
+        conn = psycopg2.connect(**get_db_config())
         cur = conn.cursor()
 
         # All tables in public schema
@@ -482,4 +461,3 @@ async def get_metadata():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api:app", host="127.0.0.1", port=8000, reload=True)
-

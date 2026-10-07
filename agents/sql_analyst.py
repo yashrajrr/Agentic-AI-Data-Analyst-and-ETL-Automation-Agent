@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.llm_pick import pick_llm
 from utils.database import DatabaseUtil
+from utils.config import get_db_config
 from Models.schema import AgentSchema, JudgeSchema
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
@@ -30,15 +31,7 @@ def prompt_query_context(state: AgentSchema) -> AgentSchema:
 
     curated_question = state.curated_ques
 
-    conn_details = {
-        "host": os.environ['host'],
-        "port": os.environ['port'],
-        "user": os.environ['user'],
-        "password": os.environ['password'],
-        "dbname": os.environ['database']
-    }
-
-    obj = DatabaseUtil(conn_details)
+    obj = DatabaseUtil(get_db_config())
 
     schema_info = obj.schema_details("public")  # Fetch schema details for the 'public' schema
 
@@ -125,15 +118,7 @@ def execute_sql(state: AgentSchema) -> AgentSchema:
 
     sql_query = state.generated_sql_query
 
-    conn_details = {
-        "host": os.environ['host'],
-        "port": os.environ['port'],
-        "user": os.environ['user'],
-        "password": os.environ['password'],
-        "dbname": os.environ['database']
-    }
-
-    obj = DatabaseUtil(conn_details)
+    obj = DatabaseUtil(get_db_config())
 
     execution_result = obj.execute_sql(sql_query)  # Execute the SQL query on the database
     # ``DatabaseUtil.execute_sql`` returns ``None`` on failure (and ``str(...)``
@@ -208,11 +193,6 @@ sql_agent_graph.add_edge("represent_final_answer", END)
 
 
 sql_analyst = sql_agent_graph.compile()
-
-from IPython.display import display, Image
-img = Image(sql_analyst.get_graph().draw_mermaid_png())
-with open("sql_analyst_graph.png", "wb") as f:
-    f.write(img.data)
 
 if __name__ == "__main__":
 
