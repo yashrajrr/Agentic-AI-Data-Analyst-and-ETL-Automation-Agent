@@ -15,7 +15,7 @@ _venv_dotenv = dotenv_values(Path(__file__).resolve().parent / ".env")
 for _k, _v in _venv_dotenv.items():
     os.environ.setdefault(_k, _v or "")
 
-from langchain_core.messages import HumanMessage, ToolMessage
+from langchain_core.messages import HumanMessage, ToolMessage, AIMessage
 from agents.data_agent import data_agent
 from utils.database import DatabaseUtil
 
@@ -274,8 +274,18 @@ async def ask_question(request: Request):
     started = time.perf_counter()
 
     try:
+        past = load_history()
+        history_msgs = []
+        # Keep the last 5 exchanges for context
+        for item in past[-5:]:
+            history_msgs.append(HumanMessage(content=item["question"]))
+            # Some answers might be empty or pure data, ensure string
+            history_msgs.append(AIMessage(content=str(item["answer"] or "")))
+            
+        history_msgs.append(HumanMessage(content=query))
+
         response = data_agent.invoke(
-            {"messages": [HumanMessage(content=query)], "route_response": ""}
+            {"messages": history_msgs, "route_response": ""}
         )
     except Exception as e:
         # Never surface raw agent internals or stack traces to the client.

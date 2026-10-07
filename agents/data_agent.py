@@ -24,9 +24,7 @@ llm_router = llm.with_structured_output(RouterSchema)
 
 def router_node(state:DataAgentSchema):
 
-    message = state.messages[-1].content
-
-    route_response_dict = llm_router.invoke(message).model_dump() # type: ignore
+    route_response_dict = llm_router.invoke(state.messages).model_dump() # type: ignore
 
     route_response = route_response_dict['answer']
 
@@ -39,10 +37,8 @@ def etl_node(state:DataAgentSchema):
     message = state.messages[-1].content
 
     response = etl_analyst.invoke(
-             {"messages":[HumanMessage(content=f"""
-            {message}
-    """)]}
-        ) 
+        {"messages": state.messages}
+    )
     state.messages = state.messages + [response]
 
     return state
