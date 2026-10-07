@@ -9,7 +9,11 @@ wheels/
 # Virtual environments
 .venv
 .env
+node_modules/
+npm-debug.log*
 
 # Runtime data
 data/history.json
 data/history.json.tmp
+
+.vercel
