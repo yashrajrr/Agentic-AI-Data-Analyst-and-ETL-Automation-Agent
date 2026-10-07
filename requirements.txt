@@ -12,5 +12,6 @@ requests>=2.31.0
 
 langchain-openrouter>=0.1.0
 ipython>=8.22.2
+python-multipart>=0.0.9
 
 
