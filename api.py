@@ -34,7 +34,7 @@ INDEX_PATH = BASE_DIR / "index.html"
 DATA_DIR = BASE_DIR / "data"
 HISTORY_PATH = DATA_DIR / "history.json"
 HISTORY_LIMIT = 50
-ALLOWED_FOLDERS = {"extract", "transform"}
+ALLOWED_FOLDERS = {"extract", "transform", "uploads"}
 
 
 
@@ -368,6 +368,21 @@ async def get_files():
             })
     files.sort(key=lambda f: f["modified"], reverse=True)
     return {"status": "success", "files": files}
+    
+from fastapi import UploadFile, File
+
+@app.post("/api/files/upload")
+async def upload_file(file: UploadFile = File(...)):
+    try:
+        target_dir = DATA_DIR / "uploads"
+        target_dir.mkdir(parents=True, exist_ok=True)
+        target_path = target_dir / file.filename
+        content = await file.read()
+        with open(target_path, "wb") as f:
+            f.write(content)
+        return {"status": "success", "path": f"data/uploads/{file.filename}"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
 
 
 @app.get("/api/files/{folder}/{name}")

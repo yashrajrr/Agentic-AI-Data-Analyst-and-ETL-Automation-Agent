@@ -24,7 +24,11 @@ llm_router = llm.with_structured_output(RouterSchema)
 
 def router_node(state:DataAgentSchema):
 
-    route_response_dict = llm_router.invoke(state.messages).model_dump() # type: ignore
+    from langchain_core.messages import SystemMessage
+    instructions = [
+        SystemMessage(content="Route queries about analyzing or querying uploaded local files (like CSVs, JSON, etc) to 'etl'. Route queries about the main database to 'sql'.")
+    ]
+    route_response_dict = llm_router.invoke(instructions + state.messages).model_dump() # type: ignore
 
     route_response = route_response_dict['answer']
 

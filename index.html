@@ -250,10 +250,16 @@
                                 <span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">DATA STORE</span>
                                 <span class="font-body-lg text-body-lg text-on-surface" id="files-count">Loading files…</span>
                             </div>
-                            <div class="flex gap-2 text-secondary font-caption-mono">
-                                <span id="extract-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent text-primary">extract</span>
-                                <span class="mx-1 text-secondary">/</span>
-                                <span id="transform-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent">transform</span>
+                            <div class="flex items-center gap-4">
+                                <div class="flex gap-2 text-secondary font-caption-mono">
+                                    <span id="extract-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent text-primary">extract</span>
+                                    <span class="mx-1 text-secondary">/</span>
+                                    <span id="transform-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent">transform</span>
+                                    <span class="mx-1 text-secondary">/</span>
+                                    <span id="uploads-chip" class="cursor-default bg-surface-container-low px-space-sm py-0.5 rounded text-caption-mono border border-transparent">uploads</span>
+                                </div>
+                                <input type="file" id="file-upload" class="hidden" accept=".csv,.json,.parquet" onchange="handleFileUpload(event)">
+                                <button type="button" class="bg-primary text-on-primary font-caption-mono text-caption-mono px-space-md py-space-xs rounded hover:bg-primary-container transition-colors" onclick="document.getElementById('file-upload').click()">+ Upload</button>
                             </div>
                         </div>
                         <div id="files-empty" class="p-space-xl text-center border-t border-surface-dim hidden">
@@ -1080,6 +1086,8 @@
                 countEl.textContent = `${files.length} file${files.length === 1 ? "" : "s"}`;
                 extractChip.textContent = `extract · ${files.filter(f => f.folder === "extract").length}`;
                 transformChip.textContent = `transform · ${files.filter(f => f.folder === "transform").length}`;
+                const uploadsChip = document.getElementById("uploads-chip");
+                if (uploadsChip) uploadsChip.textContent = `uploads · ${files.filter(f => f.folder === "uploads").length}`;
 
                 if (!files.length) {
                     emptyEl.classList.remove("hidden");
@@ -1119,6 +1127,38 @@
         const extractChip = document.getElementById("extract-chip");
         const transformChip = document.getElementById("transform-chip");
         loadFiles();
+
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const btn = event.target.nextElementSibling;
+            const originalText = btn.textContent;
+            btn.textContent = "Uploading...";
+            btn.disabled = true;
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const res = await fetch("/api/files/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                const body = await res.json();
+                if (res.ok && body.status === "success") {
+                    await loadFiles();
+                    setQuery(`Query my uploaded file at ${body.path}`);
+                } else {
+                    alert("Upload failed: " + (body.message || "Unknown error"));
+                }
+            } catch (e) {
+                alert("Upload failed: " + e.message);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                event.target.value = "";
+            }
+        }
 
         /* ============================================================
            History view
