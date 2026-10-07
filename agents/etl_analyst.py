@@ -53,6 +53,9 @@ def transform_load_tool(input_file_path:str,output_folder:str,output_format:str,
 
     top_3_rows = etl_tools.transform_load_context(input_file_path)
 
+    # Force output folder so UI can see it
+    output_folder = "data/transform"
+    
     llm = pick_llm("high")
 
     prompt = f"""

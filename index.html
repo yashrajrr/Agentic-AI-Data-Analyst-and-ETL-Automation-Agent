@@ -177,7 +177,7 @@
                         <!-- Example chips -->
                         <div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
                             <span class="font-caption-mono text-caption-mono text-secondary uppercase mr-space-xs">Examples:</span>
-                            <button class="bg-on-surface text-surface font-body-md text-body-md px-space-sm py-0.5 border border-on-surface cursor-default" type="button" onclick="setQuery('Who are our top 5 users by rating?')">Who are our top 5 users by rating?</button>
+                            <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Who are our top 5 users by rating?')">Who are our top 5 users by rating?</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Show me this month\\'s payments')">Show me this month's payments</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Which vehicles got the lowest ratings?')">Which vehicles got the lowest ratings?</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV')">Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV</button>
@@ -479,14 +479,33 @@
            ============================================================ */
         const EXPLANATION_HTML_CACHE = new Map();
 
+        let isFirstQuery = true;
+
         async function ask() {
             const input = document.getElementById("query-input");
             const query = (input.value || "").trim();
             if (!query) return;
 
             const resultsArea = document.getElementById("results-area");
-            resultsArea.innerHTML = `
-                        <div class="bg-surface-container-lowest border border-on-surface mb-space-lg">
+            if (isFirstQuery) {
+                resultsArea.innerHTML = "";
+                isFirstQuery = false;
+            }
+
+            const qaContainer = document.createElement("div");
+            qaContainer.className = "flex flex-col gap-space-sm mb-space-xl";
+            
+            // Add user query display
+            const queryBlock = document.createElement("div");
+            queryBlock.className = "self-end bg-surface border border-surface-dim p-space-md mb-2 shadow-sm rounded max-w-[90%]";
+            queryBlock.innerHTML = `<span class="font-caption-mono text-caption-mono text-secondary uppercase block mb-1">YOU ASKED:</span>
+                                    <span class="font-body-lg text-body-lg text-on-surface">${escapeHtml(query)}</span>`;
+            qaContainer.appendChild(queryBlock);
+
+            // Add loading state
+            const loadingBlock = document.createElement("div");
+            loadingBlock.className = "bg-surface-container-lowest border border-on-surface mb-space-lg";
+            loadingBlock.innerHTML = `
                             <div class="p-space-lg border-b border-surface-dim flex flex-col items-center justify-center py-10">
                                 <span class="material-symbols-outlined animate-spin text-primary text-[32px] mb-4">sync</span>
                                 <h2 class="font-headline-lg text-headline-lg text-on-surface text-center">Processing with Data Agent…</h2>
@@ -494,6 +513,11 @@
                             </div>
                         </div>
                     `;
+            qaContainer.appendChild(loadingBlock);
+            resultsArea.appendChild(qaContainer);
+            
+            // Scroll to the new query
+            qaContainer.scrollIntoView({ behavior: 'smooth' });
             input.disabled = true;
             document.getElementById("ask-button").disabled = true;
 
@@ -506,14 +530,14 @@
                 }).then(r => r.json());
 
                 if (result.status !== "success") {
-                    resultsArea.innerHTML = `
-                                <div class="bg-error-container border border-on-error p-space-lg mb-space-lg">
+                    qaContainer.innerHTML = `
+                                <div class="bg-error-container border border-on-error p-space-lg mb-space-lg w-full">
                                     <div class="flex items-start gap-space-sm">
                                         <span class="material-symbols-outlined text-error text-[20px] mt-0.5 select-none">error</span>
                                         <div>
                                             <h2 class="font-headline-lg text-error text-headline-lg m-0">Sorry, I couldn't process that request.</h2>
                                             <p class="font-body-lg text-body-lg text-on-surface mt-2">${escapeHtml(result.message || "An unexpected error occurred.")}</p>
-                                            <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="clearResults()">Dismiss</button>
+                                            <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="this.closest('.flex-col').remove()">Dismiss</button>
                                         </div>
                                     </div>
                                 </div>
@@ -523,22 +547,30 @@
                     return;
                 }
 
+                // Add the query block back after render functions clear the qaContainer
+                const prependQueryBlock = (container) => {
+                    container.insertBefore(queryBlock, container.firstChild);
+                };
+
                 if (result.route === "sql") {
-                    renderSqlResult(resultsArea, result, query);
+                    renderSqlResult(qaContainer, result, query);
+                    prependQueryBlock(qaContainer);
                 } else if (result.route === "etl") {
-                    renderEtlResult(resultsArea, result, query);
+                    renderEtlResult(qaContainer, result, query);
+                    prependQueryBlock(qaContainer);
                 } else {
-                    renderPlainResult(resultsArea, result, query);
+                    renderPlainResult(qaContainer, result, query);
+                    prependQueryBlock(qaContainer);
                 }
             } catch (err) {
-                resultsArea.innerHTML = `
-                            <div class="bg-error-container border border-on-error p-space-lg mb-space-lg">
+                qaContainer.innerHTML = `
+                            <div class="bg-error-container border border-on-error p-space-lg mb-space-lg w-full">
                                 <div class="flex items-start gap-space-sm">
                                     <span class="material-symbols-outlined text-error text-[20px] mt-0.5 select-none">wifi_off</span>
                                     <div>
                                         <h2 class="font-headline-lg text-error text-headline-lg m-0">Network error.</h2>
                                         <p class="font-body-lg text-body-lg text-on-surface mt-2">${escapeHtml(err.message || "Could not reach the backend.")}</p>
-                                        <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="clearResults()">Dismiss</button>
+                                        <button type="button" class="font-caption-mono text-caption-mono mt-3 text-secondary hover:text-on-surface underline underline-offset-2" onclick="this.closest('.flex-col').remove()">Dismiss</button>
                                     </div>
                                 </div>
                             </div>
@@ -552,6 +584,7 @@
         document.getElementById("ask-button").addEventListener("click", ask);
 
         function clearResults() {
+            isFirstQuery = true;
             const resultsArea = document.getElementById("results-area");
             document.getElementById("pipeline-strip").classList.add("hidden");
             resultsArea.innerHTML = `
