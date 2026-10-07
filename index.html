@@ -916,7 +916,6 @@
             currentResult = result;
             container.innerHTML = "";
             const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: ETL", result.answer, null, null, result.timing_ms);
-            container.appendChild(header);
 
             const wrap = document.createElement("div");
             wrap.className = "bg-surface-container-lowest border border-on-surface mb-space-lg";
@@ -935,7 +934,6 @@
                             ${status}
                             <div>
                                 <span class="font-label-tag text-label-tag text-surface-tint block mb-1">TOOL: ${toolName.toUpperCase() || "ETL"}</span>
-                                <p class="font-body-lg text-body-lg text-on-surface">${escapeHtml(result.answer || "")}</p>
                                 ${result.etl.output_path ? `
                                     <div class="mt-3 border border-surface-dim bg-surface-container-lowest p-space-sm">
                                         <span class="font-caption-mono text-caption-mono text-secondary block mb-1">OUTPUT PATH:</span>
