@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 import os
 import datetime
 import decimal
+from psycopg2 import sql
 load_dotenv()
 
 
@@ -67,7 +68,7 @@ class DatabaseUtil:
                 schema_info_context = f"{schema_info_context}\nTable: {table_name}\n"
 
                 # Adding Columns & Data Types
-                cursor.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = %s;", (table_name,))
+                cursor.execute("SELECT column_name, data_type FROM information_schema.columns WHERE table_schema = %s AND table_name = %s ORDER BY ordinal_position;", (schema_name, table_name))
                 columns_list = cursor.fetchall()
 
                 for column in columns_list:
@@ -76,7 +77,7 @@ class DatabaseUtil:
                     schema_info_context = f"{schema_info_context}  Column: {column_name}, Data Type: {data_type}\n"
 
                 # Adding Sample Data
-                cursor.execute(f"SELECT * FROM {schema_name}.{table_name} LIMIT 5;")
+                cursor.execute(sql.SQL("SELECT * FROM {}.{} LIMIT 5").format(sql.Identifier(schema_name), sql.Identifier(table_name)))
                 sample_data = cursor.fetchall()
                 schema_info_context = f"{schema_info_context}  Sample Data:\n"
                 for row in sample_data:
@@ -104,9 +105,13 @@ class DatabaseUtil:
 
         try:
             cursor = connection.cursor()
+            # Defense in depth: SQL analyst requests run in a read-only
+            # transaction even if the model's safety classification is wrong.
+            cursor.execute("SET TRANSACTION READ ONLY")
+            cursor.execute("SET LOCAL statement_timeout = '30s'")
             cursor.execute(query)
             result = cursor.fetchall()
-            connection.commit()
+            connection.rollback()
             return str(result)
         except Exception as e:
             print(f"Error executing query: {e}")
@@ -132,6 +137,8 @@ class DatabaseUtil:
         cursor = None
         try:
             cursor = connection.cursor()
+            cursor.execute("SET TRANSACTION READ ONLY")
+            cursor.execute("SET LOCAL statement_timeout = '30s'")
             cursor.execute(query)
             columns = [desc[0] for desc in cursor.description] if cursor.description else []
             raw_rows = cursor.fetchall()
@@ -143,6 +150,7 @@ class DatabaseUtil:
                 "error": None,
             }
         except Exception as e:
+            connection.rollback()
             print(f"Error executing query: {e}")
             return {**empty, "error": str(e)}
         finally:

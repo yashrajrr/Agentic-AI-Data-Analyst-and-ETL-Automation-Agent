@@ -1328,7 +1328,7 @@
 
         async function clearHistory() {
             try {
-                const res = await fetch("/api/history", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: "", route: "clear", answer: "" }) });
+                const res = await fetch("/api/history", { method: "DELETE" });
                 const body = await res.json();
                 if (body.status === "success") {
                     document.getElementById("history-rows").innerHTML = "";

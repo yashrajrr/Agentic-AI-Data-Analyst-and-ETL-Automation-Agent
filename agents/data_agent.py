@@ -26,7 +26,7 @@ def router_node(state:DataAgentSchema):
 
     from langchain_core.messages import SystemMessage
     instructions = [
-        SystemMessage(content="Route queries about analyzing or querying uploaded local files (like CSVs, JSON, etc) to 'etl'. Route queries about the main database to 'sql'.")
+        SystemMessage(content="Route questions that mention a file path, uploaded/extracted/transformed data, or asking to call/extract an API to 'etl'. This includes questions about data saved in data/extract, data/transform, or data/uploads. Route questions about tables in the configured PostgreSQL database to 'sql'. If ambiguous, use 'etl' when the user mentions a file and 'sql' when the user mentions database tables.")
     ]
     route_response_dict = llm_router.invoke(instructions + state.messages).model_dump() # type: ignore
 

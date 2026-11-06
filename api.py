@@ -148,11 +148,8 @@ def extract_sql_payload(state):
 
 
 def parse_output_path(text):
-    for pattern in (r"saved at ([^\n]+?) in ", r"saved to ([^\n]+)"):
-        match = re.search(pattern, text, re.IGNORECASE)
-        if match:
-            return match.group(1).strip()
-    return ""
+    match = re.search(r"saved (?:at|to) (.+?\.(?:csv|json|parquet))\b", text, re.IGNORECASE)
+    return match.group(1).strip() if match else ""
 
 
 def parse_generated_code(text):
@@ -263,7 +260,7 @@ async def ask_question(request: Request):
         past = load_history()
         history_msgs = []
         # Keep the last 5 exchanges for context
-        for item in past[-5:]:
+        for item in reversed(past[:5]):
             history_msgs.append(HumanMessage(content=item["question"]))
             # Some answers might be empty or pure data, ensure string
             history_msgs.append(AIMessage(content=str(item["answer"] or "")))
@@ -326,10 +323,14 @@ async def post_history(request: Request):
     question = (data.get("question") or "").strip()
     if not question:
         return {"status": "error", "message": "No question provided"}
-    if not question:
-        return {"status": "error", "message": "No question provided"}
     items = append_history(question, data.get("route", "unknown"), data.get("answer", ""))
     return {"status": "success", "history": items}
+
+
+@app.delete("/api/history")
+async def delete_history():
+    save_history([])
+    return {"status": "success", "history": []}
 
 
 @app.get("/api/files")
@@ -362,13 +363,19 @@ async def upload_file(file: UploadFile = File(...)):
     try:
         target_dir = DATA_DIR / "uploads"
         target_dir.mkdir(parents=True, exist_ok=True)
-        safe_filename = file.filename or "upload.tmp"
+        safe_filename = Path(file.filename or "upload.tmp").name
+        if safe_filename.startswith(".") or Path(safe_filename).suffix.lower() not in {".csv", ".json", ".parquet"}:
+            raise HTTPException(status_code=400, detail="Upload a CSV, JSON, or Parquet file with a valid filename.")
         target_path = target_dir / safe_filename
-        content = await file.read()
+        content = await file.read(25 * 1024 * 1024 + 1)
+        if len(content) > 25 * 1024 * 1024:
+            raise HTTPException(status_code=413, detail="File exceeds the 25 MB upload limit.")
         with open(target_path, "wb") as f:
             f.write(content)
         return {"status": "success", "path": f"data/uploads/{safe_filename}"}
     except Exception as e:
+        if isinstance(e, HTTPException):
+            raise
         return {"status": "error", "message": str(e)}
 
 

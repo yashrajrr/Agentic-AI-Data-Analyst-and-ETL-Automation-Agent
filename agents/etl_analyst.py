@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -51,25 +52,35 @@ def transform_load_tool(input_file_path:str,output_folder:str,output_format:str,
     """
     etl_tools = ETLTools()
 
-    top_3_rows = etl_tools.transform_load_context(input_file_path)
+    try:
+        frame = etl_tools.read_frame(input_file_path)
+        context = etl_tools.transform_load_context(input_file_path)
+    except Exception as exc:
+        return f"Failed to read input data: {exc}"
 
-    # Force output folder so UI can see it
     output_folder = "data/transform"
+    output_dir = etl_tools.DATA_DIR / "transform"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_format = output_format.lower().lstrip(".")
+    if output_format not in {"csv", "json", "parquet"}:
+        output_format = "csv"
+    output_path = output_dir / f"transformed_data.{output_format}"
     
     llm = pick_llm("high")
 
     prompt = f"""
             You are a Python Data Analyst who uses Pandas to analyze data. 
-            You need to provide only the Pandas Code that will help to perform the right ETL operations on the data stored in the file : {input_file_path}
+            A pandas dataframe named df is already loaded from {input_file_path}.
             as per the user's question. Do not provide any explanation or comments, only
             the code should be provided. The code should be in a format that can be executed 
             in a Python environment with Pandas installed. 
             Don't write anything else than Pandas Code. \n
             
-            Create the Pandas Dataframe from the data stored in the file : {input_file_path} and then 
-            write the code to transform and save the data at {output_folder}.
+            Set a variable named result to the transformed dataframe. Do not read another file.
+            Save result to the exact output_path variable, using the {output_format} format.
+            Do not use imports, filesystem operations, or access anything except df, pd, output_path and normal dataframe methods.
             Here's the user's question: {user_question}\n
-            Here's the context of the data you will be analyzing: {top_3_rows}\n
+            Here's the context of the data you will be analyzing: {context}\n
 
         """
 
@@ -81,16 +92,44 @@ def transform_load_tool(input_file_path:str,output_folder:str,output_format:str,
         content = str(content)
 
     # Optional Cleaning
-    pandas_code = content.strip().strip('```').strip().lstrip('python').strip()
+    import re
+    pandas_code = re.sub(r"^```(?:python)?\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE).strip()
 
     # Execute the Pandas code
-    results = etl_tools.execute_code(pandas_code)
+    results = etl_tools.execute_code(pandas_code, frame, str(output_path))
 
-    return f"The data is transformed and saved at {output_folder} in {output_format} format. \n\n Pandas Code Executed: \n {pandas_code} \n\n Execution Result: \n {results}"
+    if results.startswith("Failed"):
+        return results
+    if not output_path.is_file():
+        return f"Transformation did not create the required output file. Result: {results}"
+    return f"The data is transformed and saved to {output_path} in {output_format} format. \n\n Pandas Code Executed: \n {pandas_code} \n\n Execution Result: \n {results}"
 
 
 # Toolkit 
 tools = [extract_load_tool, transform_load_tool]
+
+
+@tool
+def analyze_file_tool(input_file_path: str, user_question: str) -> str:
+    """Analyze an existing CSV, JSON, or Parquet file under data/."""
+    etl_tools = ETLTools()
+    try:
+        frame = etl_tools.read_frame(input_file_path)
+    except Exception as exc:
+        return f"Failed to read data file: {exc}"
+    llm = pick_llm("medium")
+    prompt = f"""Answer the user's question about this dataset. If calculation is needed, return only pandas Python code using a preloaded dataframe named df, assign the answer to result, and do not use imports or filesystem/network access. If the question only asks what is in the data, answer directly from the supplied sample and summary.\n\nQuestion: {user_question}\nColumns: {list(frame.columns)}\nRow count: {len(frame)}\nDtypes: {frame.dtypes.astype(str).to_dict()}\nSample rows: {frame.head(8).to_dict(orient='records')}\nNumeric summary: {frame.describe(include='all').fillna('').to_dict()}"""
+    response = llm.invoke(prompt).content
+    content = response if isinstance(response, str) else str(response)
+    cleaned = re.sub(r"^```(?:python)?\s*|\s*```$", "", content.strip(), flags=re.IGNORECASE).strip()
+    if re.search(r"\b(result\s*=|df\[|df\.|print\s*\()", cleaned) and not cleaned.lower().startswith(("here", "the dataset", "based on", "this dataset")):
+        result = etl_tools.execute_code(cleaned, frame)
+        if not result.startswith("Failed"):
+            return result
+    return content
+
+
+tools.append(analyze_file_tool)
 
 llm = pick_llm("high")
 llm_bind = llm.bind_tools(tools)
@@ -104,8 +143,11 @@ def llm_node(state:ETLAgentSchema):
 
     prompt = f"""
             You are a Python Data Analyst who has access to tools that can extract and load, 
-            transform and load data. You will be provided with a user's question 
+            transform, analyze and load data. You will be provided with a user's question
             and you would need to perform the right ETL operations as per the user's question. 
+            For questions about an already extracted, uploaded, or transformed file, call analyze_file_tool.
+            Use the exact file path the user gives, or the most recently referenced data file.
+            For API extraction, save to data/extract and use the requested format.
             If the operation is performed then inform the user and end the coversation.
             Here's the chat history: {messages}\n
     """
