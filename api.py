@@ -504,6 +504,71 @@ async def get_metadata():
         return {"status": "error", "message": str(exc), "tables": []}
 
 
+@app.post("/api/query-suggestions")
+async def suggest_database_queries(request: Request):
+    """Generate fresh natural-language query suggestions grounded in database metadata."""
+    data = await request.json()
+    selected_dataset = (data.get("dataset") or "database").strip()
+    selected_table = selected_dataset.removeprefix("table:") if selected_dataset.startswith("table:") else None
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT table_name FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                    ORDER BY table_name
+                """)
+                table_names = [row[0] for row in cursor.fetchall()]
+                if selected_table:
+                    if selected_table not in table_names:
+                        raise HTTPException(status_code=400, detail="The selected database table is unavailable.")
+                    table_names = [selected_table]
+
+                metadata = []
+                for table_name in table_names:
+                    cursor.execute("""
+                        SELECT column_name, data_type
+                        FROM information_schema.columns
+                        WHERE table_schema = 'public' AND table_name = %s
+                        ORDER BY ordinal_position
+                    """, (table_name,))
+                    metadata.append({
+                        "table": table_name,
+                        "columns": [{"name": row[0], "type": row[1]} for row in cursor.fetchall()],
+                    })
+        finally:
+            conn.close()
+
+        if not metadata:
+            return {"status": "success", "suggestions": [], "message": "No database tables are available."}
+
+        table_context = "\n".join(
+            f"- {table['table']}: " + ", ".join(f"{column['name']} ({column['type']})" for column in table["columns"])
+            for table in metadata
+        )
+        from utils.llm_pick import pick_llm
+        response = pick_llm("low").invoke(f"""
+Generate exactly 3 distinct, useful natural-language questions a user can ask a read-only analytics assistant about this PostgreSQL database.
+Ground every question in the table and column metadata below. Do not invent fields or tables. Prefer a mix of useful summaries, comparisons or trends, and at least one chart-worthy question when suitable date/time and numeric or categorical fields exist. For a single-table selection, use only that table. Questions must be concise and understandable to a non-technical user.
+Return only a JSON array of 3 strings, with no markdown or additional text.
+
+Database metadata:
+{table_context}
+""").content
+        if isinstance(response, list):
+            raw_suggestions = response
+        else:
+            cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", str(response).strip(), flags=re.IGNORECASE)
+            raw_suggestions = json.loads(cleaned)
+        suggestions = [item.strip() for item in raw_suggestions if isinstance(item, str) and item.strip()]
+        return {"status": "success", "suggestions": suggestions[:3]}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        return {"status": "error", "suggestions": [], "message": f"Could not generate suggestions: {exc}"}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("api:app", host="127.0.0.1", port=8000, reload=True)

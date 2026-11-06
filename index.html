@@ -487,84 +487,67 @@
             const panel = document.getElementById("database-suggestions");
             const list = document.getElementById("database-suggestion-list");
             const hint = document.getElementById("database-suggestion-hint");
-            const suggestionsByTable = {
-                rides: [
-                    "How many rides were completed each day?",
-                    "What is the average ride distance by day?",
-                    "Generate a chart of dropoff time vs distance km"
-                ],
-                payments: [
-                    "What is the total payment amount by payment method?",
-                    "Show daily payment totals for the last 30 days",
-                    "Which payment methods are used most often?"
-                ],
-                vehicles: [
-                    "How many vehicles are there by make and model?",
-                    "Which vehicle models have the highest average rating?",
-                    "Show the number of vehicles by year"
-                ],
-                ratings: [
-                    "What is the average rating by driver?",
-                    "How many ratings were submitted each month?",
-                    "Which drivers have the most ratings?"
-                ],
-                users: [
-                    "How many users signed up each month?",
-                    "How many users are there by city?",
-                    "Show the newest 10 users"
-                ]
-            };
-            const genericSuggestions = [
-                "How many records are in this table?",
-                "Show the newest 10 records",
-                "Summarize this table by its categories"
-            ];
-            let availableTables = [];
-            let activeSuggestions = [];
-            let suggestionIndex = 0;
+            const refreshButton = document.getElementById("suggest-query-button");
+            let requestId = 0;
 
-            const renderSuggestions = () => {
+            const refreshSuggestions = async () => {
                 const value = select.value || "auto";
-                const selectedTable = value.startsWith("table:") ? value.slice("table:".length).toLowerCase() : "";
-                const show = value === "database" || Boolean(selectedTable);
+                const show = value === "database" || value.startsWith("table:");
                 panel.classList.toggle("hidden", !show);
                 if (!show) return;
-
-                const tableNames = selectedTable ? [selectedTable] : availableTables;
-                const tableSuggestions = tableNames.flatMap(name => suggestionsByTable[name] || []);
-                activeSuggestions = [...new Set(tableSuggestions.length ? tableSuggestions : genericSuggestions)];
-                if (suggestionIndex >= activeSuggestions.length) suggestionIndex = 0;
-                hint.textContent = selectedTable
-                    ? `Sample questions for the ${selectedTable} table.`
-                    : availableTables.length
-                        ? `Sample questions based on ${availableTables.length} available database table${availableTables.length === 1 ? "" : "s"}.`
-                        : "Sample database questions. Table details are unavailable right now.";
+                const currentRequest = ++requestId;
+                refreshButton.disabled = true;
+                refreshButton.textContent = "Generating…";
+                hint.textContent = "Generating questions from the selected database metadata…";
                 list.replaceChildren();
-                const start = suggestionIndex;
-                const visibleSuggestions = Array.from({ length: Math.min(3, activeSuggestions.length) }, (_, offset) => activeSuggestions[(start + offset) % activeSuggestions.length]);
-                for (const question of visibleSuggestions) {
-                    const chip = document.createElement("button");
-                    chip.type = "button";
-                    chip.className = "bg-surface-container-low text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-1 border border-surface-dim transition-colors text-left";
-                    chip.textContent = question;
-                    chip.addEventListener("click", () => {
-                        document.getElementById("query-input").value = question;
-                        document.getElementById("query-input").focus();
+
+                try {
+                    const response = await fetch("/api/query-suggestions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ dataset: value })
                     });
-                    list.appendChild(chip);
+                    const result = await response.json();
+                    if (currentRequest !== requestId || select.value !== value) return;
+                    if (!response.ok || result.status !== "success") throw new Error(result.message || "Suggestion generation failed.");
+                    const suggestions = result.suggestions || [];
+                    if (!suggestions.length) {
+                        hint.textContent = result.message || "No suggestions are available for this database.";
+                        return;
+                    }
+                    const selectedTable = value.startsWith("table:") ? value.slice("table:".length) : null;
+                    hint.textContent = selectedTable
+                        ? `Generated from the ${selectedTable} table’s columns and data types.`
+                        : "Generated from the available database tables, columns, and data types.";
+                    for (const question of suggestions) {
+                        const chip = document.createElement("button");
+                        chip.type = "button";
+                        chip.className = "bg-surface-container-low text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-1 border border-surface-dim transition-colors text-left";
+                        chip.textContent = question;
+                        chip.addEventListener("click", () => {
+                            document.getElementById("query-input").value = question;
+                            document.getElementById("query-input").focus();
+                        });
+                        list.appendChild(chip);
+                    }
+                } catch (error) {
+                    if (currentRequest !== requestId) return;
+                    hint.textContent = error.message || "Could not generate suggestions. Try again.";
+                } finally {
+                    if (currentRequest === requestId) {
+                        refreshButton.disabled = false;
+                        refreshButton.textContent = "Suggest a query";
+                    }
                 }
             };
 
-            document.getElementById("suggest-query-button").addEventListener("click", () => {
-                if (activeSuggestions.length) suggestionIndex = (suggestionIndex + 3) % activeSuggestions.length;
-                renderSuggestions();
+            refreshButton.addEventListener("click", refreshSuggestions);
+            select.addEventListener("change", () => {
+                const show = select.value === "database" || select.value.startsWith("table:");
+                panel.classList.toggle("hidden", !show);
+                if (show) refreshSuggestions();
             });
-            select.addEventListener("change", () => { suggestionIndex = 0; renderSuggestions(); });
-            document.addEventListener("database-tables-loaded", event => {
-                availableTables = event.detail || [];
-                renderSuggestions();
-            });
-            renderSuggestions();
+            if (select.value === "database" || select.value.startsWith("table:")) refreshSuggestions();
         }
 
         function reconcileViewFromFragment() {
