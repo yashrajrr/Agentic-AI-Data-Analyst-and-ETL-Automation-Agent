@@ -250,9 +250,14 @@ async def get_db_info():
 async def ask_question(request: Request):
     data = await request.json()
     query = (data.get("query") or "").strip()
+    selected_dataset = (data.get("dataset") or "auto").strip()
 
     if not query:
         return {"status": "error", "message": "No query provided"}
+    if selected_dataset != "auto":
+        available = {item["value"] for item in (await get_datasets()).get("datasets", [])}
+        if selected_dataset != "database" and selected_dataset not in available:
+            return {"status": "error", "message": "The selected dataset is no longer available. Refresh the page and choose it again."}
 
     started = time.perf_counter()
 
@@ -268,7 +273,7 @@ async def ask_question(request: Request):
         history_msgs.append(HumanMessage(content=query))
 
         response = data_agent.invoke(
-            {"messages": history_msgs, "route_response": ""}
+            {"messages": history_msgs, "route_response": "", "selected_dataset": selected_dataset}
         )
     except Exception as e:
         # Never surface raw agent internals or stack traces to the client.
@@ -355,6 +360,40 @@ async def get_files():
             })
     files.sort(key=lambda f: f["modified"], reverse=True)
     return {"status": "success", "files": files}
+
+
+@app.get("/api/datasets")
+async def get_datasets():
+    """List selectable database tables and local data files for the query UI."""
+    tables = []
+    try:
+        conn = psycopg2.connect(**get_db_config())
+        try:
+            with conn.cursor() as cursor:
+                cursor.execute("""
+                    SELECT table_name FROM information_schema.tables
+                    WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                    ORDER BY table_name
+                """)
+                tables = [{"value": f"table:{row[0]}", "label": f"Database · {row[0]}", "type": "table"}
+                          for row in cursor.fetchall()]
+        finally:
+            conn.close()
+    except Exception:
+        # The data-file selector remains useful when the SQL database is offline.
+        pass
+
+    files = []
+    for folder in sorted(ALLOWED_FOLDERS):
+        folder_path = DATA_DIR / folder
+        if not folder_path.is_dir():
+            continue
+        for entry in folder_path.iterdir():
+            if entry.is_file() and entry.suffix.lower() in {".csv", ".json", ".parquet"} and not entry.name.startswith("."):
+                path = f"data/{folder}/{entry.name}"
+                files.append({"value": f"file:{path}", "label": f"File · {path}", "type": "file"})
+    files.sort(key=lambda item: item["label"].lower())
+    return {"status": "success", "datasets": tables + files}
     
 from fastapi import UploadFile, File
 

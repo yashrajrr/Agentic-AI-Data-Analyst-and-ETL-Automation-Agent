@@ -177,6 +177,14 @@
                                 <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
                             </button>
                         </div>
+                        <div class="flex flex-wrap items-center gap-space-sm mt-space-sm">
+                            <label for="dataset-select" class="font-caption-mono text-caption-mono text-secondary uppercase">Data source</label>
+                            <select id="dataset-select" class="font-body-md text-body-md text-on-surface bg-surface-container-lowest border border-surface-dim px-space-sm py-1 focus:outline-primary">
+                                <option value="auto">Auto detect (default)</option>
+                                <option value="database">Entire database</option>
+                            </select>
+                            <span class="font-caption-mono text-caption-mono text-secondary">Optional · choose a table or saved file</span>
+                        </div>
 
                         <!-- Example chips -->
                         <div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
@@ -537,7 +545,7 @@
                 const result = await fetch("/api/ask", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query }),
+                    body: JSON.stringify({ query, dataset: document.getElementById("dataset-select").value || "auto" }),
                 }).then(r => r.json());
 
                 if (result.status !== "success") {
@@ -1131,6 +1139,41 @@
         const extractChip = document.getElementById("extract-chip");
         const transformChip = document.getElementById("transform-chip");
         loadFiles();
+        loadDatasetChoices();
+
+        async function loadDatasetChoices() {
+            const select = document.getElementById("dataset-select");
+            try {
+                const response = await fetch("/api/datasets");
+                if (!response.ok) return;
+                const body = await response.json();
+                const selected = select.value || "auto";
+                select.replaceChildren();
+                for (const [value, label] of [["auto", "Auto detect (default)"], ["database", "Entire database"]]) {
+                    const option = document.createElement("option");
+                    option.value = value;
+                    option.textContent = label;
+                    select.appendChild(option);
+                }
+                const datasets = body.datasets || [];
+                for (const type of ["table", "file"]) {
+                    const entries = datasets.filter(item => item.type === type);
+                    if (!entries.length) continue;
+                    const group = document.createElement("optgroup");
+                    group.label = type === "table" ? "Database tables" : "Saved files";
+                    for (const dataset of entries) {
+                        const option = document.createElement("option");
+                        option.value = dataset.value;
+                        option.textContent = dataset.label;
+                        group.appendChild(option);
+                    }
+                    select.appendChild(group);
+                }
+                if ([...select.options].some(option => option.value === selected)) select.value = selected;
+            } catch (error) {
+                /* Keep automatic source detection available when catalog loading fails. */
+            }
+        }
 
         async function handleFileUpload(event) {
             const file = event.target.files[0];
@@ -1151,6 +1194,7 @@
                 const body = await res.json();
                 if (res.ok && body.status === "success") {
                     await loadFiles();
+                    await loadDatasetChoices();
                     setQuery(`Query my uploaded file at ${body.path}`);
                 } else {
                     alert("Upload failed: " + (body.message || "Unknown error"));
@@ -1181,6 +1225,7 @@
                 });
                 const body = await res.json();
                 if (res.ok && body.status === "success") {
+                    await loadDatasetChoices();
                     const input = document.getElementById("query-input");
                     const prefix = `[Attached: ${body.path}] `;
                     input.value = prefix + input.value;

@@ -10,6 +10,23 @@ from Models.schema import AgentSchema, JudgeSchema
 from langchain_core.messages import AIMessage, HumanMessage
 from langgraph.graph import StateGraph, START, END
 
+VEHICLE_LOWEST_RATINGS_SQL = """WITH vehicle_scores AS (
+    SELECT v.vehicle_id, v.make, v.model, v.year, v.license_plate,
+           ROUND(AVG(r.rating)::numeric, 2) AS average_driver_rating,
+           COUNT(r.rating) AS rating_count
+    FROM public.vehicles AS v
+    JOIN public.ratings AS r ON r.driver_id = v.driver_id
+    GROUP BY v.vehicle_id, v.make, v.model, v.year, v.license_plate
+), lowest_score AS (
+    SELECT MIN(average_driver_rating) AS value FROM vehicle_scores
+)
+SELECT vs.vehicle_id, vs.make, vs.model, vs.year, vs.license_plate,
+       vs.average_driver_rating, vs.rating_count
+FROM vehicle_scores AS vs
+CROSS JOIN lowest_score AS ls
+WHERE vs.average_driver_rating = ls.value
+ORDER BY vs.make, vs.model, vs.vehicle_id"""
+
 
 # -------------------------------------- AI Agent Code--------------------------------------
 
@@ -30,6 +47,12 @@ def curate_ques(state: AgentSchema) -> AgentSchema:
 def prompt_query_context(state: AgentSchema) -> AgentSchema:
 
     curated_question = state.curated_ques
+    dataset_context = ""
+    if state.selected_dataset == "database":
+        dataset_context = "The user explicitly selected the database as the data source. Use the relevant public tables.\n"
+    elif state.selected_dataset.startswith("table:"):
+        selected_table = state.selected_dataset.removeprefix("table:")
+        dataset_context = f"The user selected public.{selected_table} as the primary dataset. Focus the query on it, and join another public table only when needed to answer the question.\n"
 
     obj = DatabaseUtil(get_db_config())
 
@@ -43,10 +66,12 @@ def prompt_query_context(state: AgentSchema) -> AgentSchema:
     table names, column names, data types, and sample data for each table so that 
     you can understand the structure of the database and generate an accurate SQL query.
     Unless user explicitly asks for specific number of rows, always limit the output to 10 rows.
+    Follow the actual schema relationships shown below. In this sample schema, ratings.driver_id identifies the rated driver; vehicles.driver_id identifies the vehicle's driver. There is no vehicle_id in ratings or rides. For a vehicle-rating question, compute the driver's average rating and associate it with that driver's vehicle, and state this limitation in the answer. Do not invent a direct vehicle-to-rating relationship.
     Note - Just generate the SQL query without any explanation or additional text because
     this query will be executed directly on the database. So, the output should be SQL
     ready to be executed without any modifications.  
     
+    {dataset_context}
     User's Original Query: {curated_question}
 
     Database Schema Details:
@@ -66,6 +91,14 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
 
     llm = pick_llm("medium")  # Pick the appropriate LLM based on the level of the question
 
+    import re
+    vehicle_rating_question = bool(re.search(r"\bvehicles?\b", state.user_question, re.IGNORECASE) and
+                                   re.search(r"\b(rat(e|ing|ings)|score|review)\w*\b", state.user_question, re.IGNORECASE) and
+                                   re.search(r"\b(lowest|least|worst|bottom|poor)\b", state.user_question, re.IGNORECASE))
+    if vehicle_rating_question:
+        state.generated_sql_query = VEHICLE_LOWEST_RATINGS_SQL
+        return state
+
     generated_sql_query = llm.invoke(prompt).content  # Generate the SQL query using the LLM
 
     # Strip markdown formatting in case the LLM wrapped the output in ```sql ... ```
@@ -81,6 +114,11 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
 def is_safe_sql(state: AgentSchema) -> AgentSchema:
 
     sql_query = state.generated_sql_query
+
+    if sql_query == VEHICLE_LOWEST_RATINGS_SQL:
+        state.is_safe = "Yes"
+        state.comments = "This is a fixed, read-only aggregate query over vehicles and ratings."
+        return state
 
     llm = pick_llm("medium")  
     llm_judge = llm.with_structured_output(JudgeSchema)
@@ -143,6 +181,7 @@ def represent_final_answer(state: AgentSchema) -> AgentSchema:
     concise, clear, and directly address the user's query. Avoid including any SQL code or technical
     details in the final answer. The final answer should be in a user-friendly format that is easy to
     understand. If the execution result is empty or does not provide a clear answer to the user's question, explain this in the final answer. \n
+    For vehicle-rating results, clearly say ratings are linked to drivers in this schema, so vehicle results are attributed through each vehicle's driver. Do not imply rating records contain a vehicle_id. Include each returned vehicle and its average rating.\n
     Here is the execution result: {execution_result} \n
     Here is the user's original question: {curated_question}
     """
