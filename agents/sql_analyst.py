@@ -87,7 +87,7 @@ def prompt_query_context(state: AgentSchema) -> AgentSchema:
     with the user's original query and the schema details of the database, including
     table names, column names, data types, and sample data for each table so that 
     you can understand the structure of the database and generate an accurate SQL query.
-    Unless the user asks for a chart/trend/visualization, limit ordinary result sets to 10 rows. For chart requests, return up to 100 ordered data points and include the requested X and Y fields.
+    For unaggregated table/listing results, return up to 100 rows unless the user requests a different count; the UI displays these in 10-row pages. For chart requests, return up to 100 ordered data points and include the requested X and Y fields. For aggregate answers, return the grouped result needed to answer the question.
     Follow the actual schema relationships shown below. In this sample schema, ratings.driver_id identifies the rated driver; vehicles.driver_id identifies the vehicle's driver. There is no vehicle_id in ratings or rides. For a vehicle-rating question, compute the driver's average rating and associate it with that driver's vehicle, and state this limitation in the answer. Do not invent a direct vehicle-to-rating relationship.
     Note - Just generate the SQL query without any explanation or additional text because
     this query will be executed directly on the database. So, the output should be SQL

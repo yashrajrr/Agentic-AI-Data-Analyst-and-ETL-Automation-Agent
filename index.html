@@ -761,8 +761,14 @@
 
             const tbody = document.createElement("tbody");
             tbody.className = "font-data-tabular text-data-tabular divide-y divide-surface-dim text-on-surface";
-            let idx = 1;
-            for (const row of result.sql.rows) {
+            const pageSize = 10;
+            const resultRows = result.sql.rows || [];
+            let pageIndex = 0;
+            const renderPage = () => {
+                tbody.replaceChildren();
+                const firstRow = pageIndex * pageSize;
+                for (const [offset, row] of resultRows.slice(firstRow, firstRow + pageSize).entries()) {
+                const idx = firstRow + offset + 1;
                 const tr = document.createElement("tr");
                 tr.className = "hover:bg-surface-container-low transition-colors";
                 const cells = [`<td class="py-space-sm px-space-md font-medium border-r border-surface-dim">${String(idx).padStart(2, "0")}</td>`];
@@ -777,10 +783,44 @@
                 cells.push(`${idx === 1 ? "" : ""}`);
                 tr.innerHTML = cells.join("");
                 tbody.appendChild(tr);
-                idx++;
+                }
+                if (resultRows.length > pageSize) {
+                    const lastRow = Math.min(firstRow + pageSize, resultRows.length);
+                    pageStatus.textContent = `Showing ${firstRow + 1}–${lastRow} of ${resultRows.length}`;
+                    pageNumber.textContent = `Page ${pageIndex + 1} of ${Math.ceil(resultRows.length / pageSize)}`;
+                    previousButton.disabled = pageIndex === 0;
+                    nextButton.disabled = lastRow >= resultRows.length;
+                }
             }
             table.appendChild(tbody);
             body.appendChild(table);
+            if (resultRows.length > pageSize) {
+                const pager = document.createElement("nav");
+                pager.className = "flex flex-wrap items-center justify-between gap-space-sm border-t border-surface-dim px-space-md py-space-sm bg-surface-container-low";
+                pager.setAttribute("aria-label", "Result pages");
+                const pageStatus = document.createElement("span");
+                pageStatus.className = "font-caption-mono text-caption-mono text-secondary";
+                pageStatus.setAttribute("aria-live", "polite");
+                const controls = document.createElement("div");
+                controls.className = "flex items-center gap-space-sm";
+                const pageNumber = document.createElement("span");
+                pageNumber.className = "font-caption-mono text-caption-mono text-secondary";
+                const makePageButton = (label, icon) => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "inline-flex items-center gap-1 border border-surface-dim bg-surface-container-lowest px-space-sm py-space-xs font-body-md text-body-md text-on-surface hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed";
+                    button.innerHTML = `<span class="material-symbols-outlined text-[16px]">${icon}</span><span>${label}</span>`;
+                    return button;
+                };
+                const previousButton = makePageButton("Previous", "chevron_left");
+                const nextButton = makePageButton("Next", "chevron_right");
+                previousButton.addEventListener("click", () => { if (pageIndex > 0) { pageIndex--; renderPage(); } });
+                nextButton.addEventListener("click", () => { if ((pageIndex + 1) * pageSize < resultRows.length) { pageIndex++; renderPage(); } });
+                controls.append(previousButton, pageNumber, nextButton);
+                pager.append(pageStatus, controls);
+                body.appendChild(pager);
+            }
+            renderPage();
             const visualization = buildVisualization(result.sql, query);
             if (visualization) body.appendChild(visualization);
             container.appendChild(body);
