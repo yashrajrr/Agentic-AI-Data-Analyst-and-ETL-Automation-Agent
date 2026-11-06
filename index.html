@@ -489,18 +489,20 @@
             const hint = document.getElementById("database-suggestion-hint");
             const refreshButton = document.getElementById("suggest-query-button");
             let requestId = 0;
-            let shownSuggestions = [];
+            const shownSuggestionsBySource = new Map();
 
             const refreshSuggestions = async () => {
                 const value = select.value || "auto";
-                const show = value === "database" || value.startsWith("table:");
+                const show = value === "database" || value.startsWith("table:") || value.startsWith("file:");
                 panel.classList.toggle("hidden", !show);
                 if (!show) return;
+                const shownSuggestions = shownSuggestionsBySource.get(value) || [];
                 const currentRequest = ++requestId;
                 refreshButton.disabled = true;
-                refreshButton.textContent = "Generating…";
-                hint.textContent = "Generating questions from the selected database metadata…";
-                list.replaceChildren();
+                refreshButton.textContent = "Refreshing…";
+                hint.textContent = value.startsWith("file:")
+                    ? "Generating questions from the selected file’s columns and data types…"
+                    : "Generating questions from the selected database metadata…";
 
                 try {
                     const response = await fetch("/api/query-suggestions", {
@@ -516,11 +518,15 @@
                         hint.textContent = result.message || "No new questions were generated. Try suggesting again.";
                         return;
                     }
-                    shownSuggestions = [...new Set([...shownSuggestions, ...suggestions])].slice(-30);
+                    shownSuggestionsBySource.set(value, [...new Set([...shownSuggestions, ...suggestions])].slice(-100));
+                    list.replaceChildren();
                     const selectedTable = value.startsWith("table:") ? value.slice("table:".length) : null;
-                    hint.textContent = selectedTable
-                        ? `Generated from the ${selectedTable} table’s columns and data types.`
-                        : "Generated from the available database tables, columns, and data types.";
+                    const selectedFile = value.startsWith("file:") ? value.slice("file:".length).split("/").pop() : null;
+                    hint.textContent = selectedFile
+                        ? `Generated from ${selectedFile}’s columns and data types.`
+                        : selectedTable
+                            ? `Generated from the ${selectedTable} table’s columns and data types.`
+                            : "Generated from the available database tables, columns, and data types.";
                     for (const question of suggestions) {
                         const chip = document.createElement("button");
                         chip.type = "button";
@@ -545,12 +551,11 @@
 
             refreshButton.addEventListener("click", refreshSuggestions);
             select.addEventListener("change", () => {
-                const show = select.value === "database" || select.value.startsWith("table:");
+                const show = select.value === "database" || select.value.startsWith("table:") || select.value.startsWith("file:");
                 panel.classList.toggle("hidden", !show);
                 if (show) refreshSuggestions();
-                shownSuggestions = [];
             });
-            if (select.value === "database" || select.value.startsWith("table:")) refreshSuggestions();
+            if (select.value === "database" || select.value.startsWith("table:") || select.value.startsWith("file:")) refreshSuggestions();
         }
 
         function reconcileViewFromFragment() {

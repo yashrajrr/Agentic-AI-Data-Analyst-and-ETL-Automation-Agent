@@ -506,39 +506,67 @@ async def get_metadata():
 
 @app.post("/api/query-suggestions")
 async def suggest_database_queries(request: Request):
-    """Generate fresh natural-language query suggestions grounded in database metadata."""
+    """Generate fresh natural-language questions grounded in database or file metadata."""
     data = await request.json()
     selected_dataset = (data.get("dataset") or "database").strip()
+    previous_suggestions = data.get("exclude") or []
+    if not isinstance(previous_suggestions, list):
+        previous_suggestions = []
     selected_table = selected_dataset.removeprefix("table:") if selected_dataset.startswith("table:") else None
     try:
-        conn = psycopg2.connect(**get_db_config())
-        try:
-            with conn.cursor() as cursor:
-                cursor.execute("""
-                    SELECT table_name FROM information_schema.tables
-                    WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
-                    ORDER BY table_name
-                """)
-                table_names = [row[0] for row in cursor.fetchall()]
-                if selected_table:
-                    if selected_table not in table_names:
-                        raise HTTPException(status_code=400, detail="The selected database table is unavailable.")
-                    table_names = [selected_table]
-
-                metadata = []
-                for table_name in table_names:
+        if selected_dataset.startswith("file:"):
+            relative_path = Path(selected_dataset.removeprefix("file:")).as_posix()
+            parts = Path(relative_path).parts
+            if len(parts) != 3 or parts[0] != "data" or parts[1] not in ALLOWED_FOLDERS or Path(parts[2]).name != parts[2] or Path(parts[2]).suffix.lower() not in {".csv", ".json", ".parquet"}:
+                raise HTTPException(status_code=400, detail="The selected data file is invalid.")
+            file_path = (BASE_DIR / relative_path).resolve()
+            if DATA_DIR.resolve() not in file_path.parents or not file_path.is_file():
+                raise HTTPException(status_code=404, detail="The selected data file is unavailable. Refresh the file list and try again.")
+            import pandas as pd
+            suffix = file_path.suffix.lower()
+            if suffix == ".csv":
+                frame = pd.read_csv(file_path, nrows=100)
+            elif suffix == ".json":
+                try:
+                    frame = pd.read_json(file_path, lines=True, nrows=100)
+                except ValueError:
+                    frame = pd.read_json(file_path)
+                    frame = frame.head(100)
+            else:
+                frame = pd.read_parquet(file_path).head(100)
+            metadata = [{
+                "table": file_path.name,
+                "columns": [{"name": str(name), "type": str(dtype)} for name, dtype in frame.dtypes.items()],
+            }]
+        else:
+            conn = psycopg2.connect(**get_db_config())
+            try:
+                with conn.cursor() as cursor:
                     cursor.execute("""
-                        SELECT column_name, data_type
-                        FROM information_schema.columns
-                        WHERE table_schema = 'public' AND table_name = %s
-                        ORDER BY ordinal_position
-                    """, (table_name,))
-                    metadata.append({
-                        "table": table_name,
-                        "columns": [{"name": row[0], "type": row[1]} for row in cursor.fetchall()],
-                    })
-        finally:
-            conn.close()
+                        SELECT table_name FROM information_schema.tables
+                        WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
+                        ORDER BY table_name
+                    """)
+                    table_names = [row[0] for row in cursor.fetchall()]
+                    if selected_table:
+                        if selected_table not in table_names:
+                            raise HTTPException(status_code=400, detail="The selected database table is unavailable.")
+                        table_names = [selected_table]
+
+                    metadata = []
+                    for table_name in table_names:
+                        cursor.execute("""
+                            SELECT column_name, data_type
+                            FROM information_schema.columns
+                            WHERE table_schema = 'public' AND table_name = %s
+                            ORDER BY ordinal_position
+                        """, (table_name,))
+                        metadata.append({
+                            "table": table_name,
+                            "columns": [{"name": row[0], "type": row[1]} for row in cursor.fetchall()],
+                        })
+            finally:
+                conn.close()
 
         if not metadata:
             return {"status": "success", "suggestions": [], "message": "No database tables are available."}
@@ -549,9 +577,12 @@ async def suggest_database_queries(request: Request):
         )
         from utils.llm_pick import pick_llm
         response = pick_llm("low").invoke(f"""
-Generate exactly 3 distinct, useful natural-language questions a user can ask a read-only analytics assistant about this PostgreSQL database.
+Generate exactly 3 distinct, useful natural-language questions a user can ask a read-only analytics assistant about this PostgreSQL database. Every refresh must produce questions different from the excluded suggestions below.
 Ground every question in the table and column metadata below. Do not invent fields or tables. Prefer a mix of useful summaries, comparisons or trends, and at least one chart-worthy question when suitable date/time and numeric or categorical fields exist. For a single-table selection, use only that table. Questions must be concise and understandable to a non-technical user.
 Return only a JSON array of 3 strings, with no markdown or additional text.
+
+Previously shown questions to avoid:
+{json.dumps(previous_suggestions[:30], ensure_ascii=False)}
 
 Database metadata:
 {table_context}
@@ -561,12 +592,105 @@ Database metadata:
         else:
             cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", str(response).strip(), flags=re.IGNORECASE)
             raw_suggestions = json.loads(cleaned)
-        suggestions = [item.strip() for item in raw_suggestions if isinstance(item, str) and item.strip()]
+        excluded = {re.sub(r"[^a-z0-9]+", " ", item.casefold()).strip() for item in previous_suggestions if isinstance(item, str)}
+        suggestions = []
+        for item in raw_suggestions:
+            if not isinstance(item, str) or not item.strip():
+                continue
+            question = item.strip()
+            normalized = re.sub(r"[^a-z0-9]+", " ", question.casefold()).strip()
+            if normalized in excluded or any(
+                normalized in re.sub(r"[^a-z0-9]+", " ", existing.casefold()).strip()
+                or re.sub(r"[^a-z0-9]+", " ", existing.casefold()).strip() in normalized
+                for existing in suggestions
+            ):
+                continue
+            suggestions.append(question)
+        # If the model repeats earlier ideas, construct fresh questions directly from
+        # real metadata rather than showing duplicate chips again.
+        for table in metadata:
+            cols = table["columns"]
+            numeric = next((c["name"] for c in cols if any(t in c["type"].lower() for t in ("int", "numeric", "decimal", "real", "double", "float"))), None)
+            time_col = next((c["name"] for c in cols if any(t in c["type"].lower() for t in ("date", "time"))), None)
+            category = next((c["name"] for c in cols if c["name"] != numeric and any(t in c["type"].lower() for t in ("character", "text", "boolean", "enum"))), None)
+            candidates = [f"How many rows are in {table['table']}?"]
+            if category:
+                candidates.extend([
+                    f"Which {category} values appear most often in {table['table']}?",
+                    f"How many records in {table['table']} have each {category}?",
+                ])
+            if numeric:
+                candidates.extend([
+                    f"What are the highest and lowest {numeric} values in {table['table']}?",
+                    f"What is the average {numeric} in {table['table']}?",
+                ])
+                if category:
+                    candidates.append(f"Compare average {numeric} across {category} in {table['table']}.")
+                if time_col:
+                    candidates.append(f"Show how {numeric} changes over {time_col} in {table['table']} as a chart.")
+            if time_col:
+                candidates.append(f"Show the most recent records from {table['table']} ordered by {time_col}.")
+            for question in candidates:
+                normalized = re.sub(r"[^a-z0-9]+", " ", question.casefold()).strip()
+                if normalized not in excluded and all(
+                    normalized != re.sub(r"[^a-z0-9]+", " ", existing.casefold()).strip()
+                    for existing in suggestions
+                ):
+                    suggestions.append(question)
+                    if len(suggestions) == 3:
+                        break
+            if len(suggestions) == 3:
+                break
         return {"status": "success", "suggestions": suggestions[:3]}
     except HTTPException:
         raise
     except Exception as exc:
         return {"status": "error", "suggestions": [], "message": f"Could not generate suggestions: {exc}"}
+
+
+@app.post("/api/fix-query")
+async def fix_failed_query(request: Request):
+    """Regenerate a failed read-only SQL query using its database error and schema."""
+    data = await request.json()
+    question = (data.get("question") or "").strip()
+    failed_sql = (data.get("sql") or "").strip()
+    error = (data.get("error") or "").strip()
+    selected_dataset = (data.get("dataset") or "database").strip()
+    if not question or not failed_sql or not error:
+        raise HTTPException(status_code=400, detail="The question, failed query, and execution error are required.")
+    if not re.match(r"(?is)^\s*(select|with)\b", failed_sql):
+        raise HTTPException(status_code=400, detail="Only failed read-only queries can be repaired.")
+    try:
+        schema_info = DatabaseUtil(get_db_config()).schema_details("public")
+        from utils.llm_pick import pick_llm
+        repaired = pick_llm("medium").invoke(f"""
+Repair this PostgreSQL query after the database returned an execution error.
+Return only one corrected, read-only SQL statement. Preserve the user's intended analysis and use only fields present in the schema. Do not include markdown or explanation.
+
+Original user request: {question}
+Selected data source: {selected_dataset}
+Failed SQL:
+{failed_sql}
+
+Database error:
+{error}
+
+Database schema:
+{schema_info}
+""").content
+        if not isinstance(repaired, str):
+            repaired = str(repaired)
+        repaired = re.sub(r"^```(?:sql)?\s*|\s*```$", "", repaired.strip(), flags=re.IGNORECASE).strip()
+        if not re.match(r"(?is)^(select|with)\b", repaired) or ";" in repaired.rstrip(";"):
+            raise ValueError("The query repair did not return a single read-only SQL statement.")
+        sql_result = structured_query(repaired)
+        if sql_result.get("error"):
+            return {"status": "error", "message": sql_result["error"], "sql": repaired}
+        return {"status": "success", "sql": repaired, "result": sql_result}
+    except HTTPException:
+        raise
+    except Exception as exc:
+        return {"status": "error", "message": str(exc)}
 
 
 if __name__ == "__main__":
