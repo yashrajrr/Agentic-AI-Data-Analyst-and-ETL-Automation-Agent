@@ -108,7 +108,7 @@
 </head>
 <body class="bg-surface font-body-md text-on-surface antialiased">
     <!-- ============ SHELL ============ -->
-    <aside class="fixed left-0 top-0 h-full w-64 bg-surface border-r border-surface-dim z-50 flex flex-col justify-between">
+    <aside class="fixed left-0 top-0 h-full w-64 bg-surface border-r border-surface-dim z-50 flex flex-col justify-between max-md:hidden">
         <div class="flex flex-col">
             <div class="h-16 px-gutter flex items-center border-b border-surface-dim">
                 <span class="font-headline-md text-headline-md tracking-wider text-on-surface uppercase">DATA AGENT</span>
@@ -129,8 +129,16 @@
         </div>
     </aside>
 
-    <div class="pl-64">
-        <header class="fixed top-0 left-64 right-0 h-16 bg-surface border-b border-surface-dim z-40 px-gutter-desktop flex items-center justify-between">
+    <nav id="mobile-nav" aria-label="Mobile navigation" class="hidden max-md:flex fixed bottom-0 inset-x-0 z-50 bg-surface-container-lowest border-t border-surface-dim justify-around px-1 py-1 shadow-lg">
+        <button class="mobile-nav-link flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 text-primary" data-path="ask" type="button" aria-current="page"><span class="material-symbols-outlined text-[20px]">search</span><span class="font-caption-mono text-caption-mono">Ask</span></button>
+        <button class="mobile-nav-link flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 text-secondary" data-path="my-files" type="button"><span class="material-symbols-outlined text-[20px]">folder_open</span><span class="font-caption-mono text-caption-mono">Files</span></button>
+        <button class="mobile-nav-link flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 text-secondary" data-path="schema" type="button"><span class="material-symbols-outlined text-[20px]">database</span><span class="font-caption-mono text-caption-mono">Schema</span></button>
+        <button class="mobile-nav-link flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 text-secondary" data-path="architecture" type="button"><span class="material-symbols-outlined text-[20px]">account_tree</span><span class="font-caption-mono text-caption-mono">Flow</span></button>
+        <button class="mobile-nav-link flex flex-col items-center justify-center gap-0.5 min-w-0 flex-1 py-1 text-secondary" data-path="past-questions" type="button"><span class="material-symbols-outlined text-[20px]">history</span><span class="font-caption-mono text-caption-mono">History</span></button>
+    </nav>
+
+    <div class="pl-64 max-md:pl-0">
+        <header class="fixed top-0 left-64 right-0 h-16 bg-surface border-b border-surface-dim z-40 px-gutter-desktop flex items-center justify-between max-md:left-0 max-md:px-space-md max-md:h-14">
             <div class="flex items-center gap-space-sm">
                 <span class="font-label-uppercase text-label-uppercase text-secondary uppercase" id="header-title">WORKSPACE // OPERATOR VIEW</span>
             </div>
@@ -144,7 +152,7 @@
             </div>
         </header>
 
-        <main class="relative pt-16 min-h-screen bg-surface w-full px-gutter-desktop py-space-xl">
+        <main class="relative pt-16 min-h-screen bg-surface w-full px-gutter-desktop py-space-xl max-md:pt-14 max-md:px-space-md max-md:pb-24">
             <div class="flex flex-col w-full">
                 <!-- ============ VIEW: ASK ============ -->
                 <section id="view-ask" class="view">
@@ -406,8 +414,9 @@
         };
         let activeView = "ask";
 
-        function navigate(view, fragment) {
+        function navigate(view, fragment, syncUrl = true) {
             if (view) {
+                if (!document.getElementById("view-" + view)) return;
                 document.querySelectorAll(".view").forEach(v => v.classList.add("hidden"));
                 document.getElementById("view-" + view).classList.remove("hidden");
                 document.querySelectorAll(".nav-link").forEach(n => {
@@ -421,6 +430,13 @@
                     n.classList.toggle("font-body-lg", !on);
                     n.classList.toggle("text-body-lg", !on);
                 });
+                document.querySelectorAll(".mobile-nav-link").forEach(n => {
+                    const on = n.getAttribute("data-path") === view;
+                    n.classList.toggle("text-primary", on);
+                    n.classList.toggle("text-secondary", !on);
+                    if (on) n.setAttribute("aria-current", "page");
+                    else n.removeAttribute("aria-current");
+                });
                 const titles = {
                     ask: "WORKSPACE // OPERATOR VIEW",
                     "my-files": "WORKSPACE // FILE LEDGER",
@@ -431,9 +447,9 @@
                 document.getElementById("header-title").textContent = titles[view] || "WORKSPACE";
                 activeView = view;
                 if (view === "schema") loadSchema();
+                if (syncUrl && window.location.hash !== `#${view}`) history.pushState({ view }, "", `#${view}`);
+                window.scrollTo({ top: 0, behavior: "smooth" });
             }
-            const el = document.querySelector(`[data-path="${fragment || view}"]`);
-            if (el) el.scrollIntoView({ block: "start", inline: "nearest" });
         }
 
         function setQuery(text) {
@@ -443,7 +459,7 @@
         }
 
         (function init() {
-            for (const link of document.querySelectorAll(".nav-link")) {
+            for (const link of document.querySelectorAll(".nav-link, .mobile-nav-link")) {
                 link.addEventListener("click", e => { e.preventDefault(); navigate(link.getAttribute("data-path")); });
             }
             document.getElementById("query-input").addEventListener("keydown", e => {
@@ -455,9 +471,11 @@
 
         function reconcileViewFromFragment() {
             const hash = window.location.hash.replace("#", "");
-            if (hash === "my-files" || hash === "past-questions") navigate(hash);
+            const allowedViews = new Set(["ask", "my-files", "schema", "architecture", "past-questions"]);
+            if (allowedViews.has(hash) && hash !== activeView) navigate(hash, null, false);
         }
         window.addEventListener("hashchange", reconcileViewFromFragment);
+        window.addEventListener("popstate", reconcileViewFromFragment);
 
         /* ============================================================
            Connection status (live)
@@ -671,10 +689,7 @@
         /* ============================================================
            SQL result rendering
            ============================================================ */
-        let currentResult = null;
-
         function renderSqlResult(container, result, query) {
-            currentResult = result;
             container.innerHTML = "";
             const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: SQL", result.answer, result.sql.row_count, result.sql.error, result.timing_ms);
             container.appendChild(header);
@@ -690,7 +705,7 @@
                             </div>
                         `;
                 container.appendChild(body);
-                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql", result));
                 appendTransparency(container, result, query);
                 return;
             }
@@ -712,7 +727,7 @@
                             </div>
                         `;
                 container.appendChild(body);
-                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql", result));
                 appendTransparency(container, result, query);
                 return;
             }
@@ -726,7 +741,7 @@
                             </div>
                         `;
                 container.appendChild(body);
-                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql"));
+                appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql", result));
                 appendTransparency(container, result, query);
                 return;
             }
@@ -765,11 +780,159 @@
             }
             table.appendChild(tbody);
             body.appendChild(table);
+            const visualization = buildVisualization(result.sql);
+            if (visualization) body.appendChild(visualization);
             container.appendChild(body);
 
-            container.appendChild(actionsStrip(query));
+            container.appendChild(actionsStrip(query, "sql", result));
             appendFollowup(container, query, result.sql.query, "sql");
             appendTransparency(container, result, query);
+        }
+
+        function buildVisualization(data) {
+            const columns = data.columns || [];
+            const rows = data.rows || [];
+            if (!columns.length || !rows.length) return null;
+            const numericColumns = columns.map((name, index) => ({ name, index })).filter(({ index }) =>
+                rows.some(row => row[index] !== null && row[index] !== "" && Number.isFinite(Number(row[index])))
+            );
+            if (!numericColumns.length) return null;
+
+            const panel = document.createElement("details");
+            panel.className = "border-t border-surface-dim bg-surface-container-lowest";
+            const summary = document.createElement("summary");
+            summary.className = "cursor-pointer list-none flex items-center gap-space-sm px-space-md py-space-sm font-label-uppercase text-label-uppercase text-primary hover:bg-surface-container-low";
+            summary.innerHTML = '<span class="material-symbols-outlined text-[18px]">query_stats</span><span>Visualize results</span><span class="font-caption-mono text-caption-mono text-secondary normal-case">Build a chart from these query results</span>';
+            panel.appendChild(summary);
+
+            const controls = document.createElement("div");
+            controls.className = "p-space-md flex flex-wrap items-end gap-space-md border-t border-surface-dim";
+            const xSelect = makeChartSelect("Category", columns.map((name, index) => ({ name, index })));
+            const ySelect = makeChartSelect("Value", numericColumns);
+            const typeSelect = document.createElement("select");
+            typeSelect.className = "font-body-md text-body-md bg-surface-container-lowest border border-surface-dim px-space-sm py-1";
+            typeSelect.setAttribute("aria-label", "Chart type");
+            for (const [value, label] of [["bar", "Bar chart"], ["line", "Line chart"]]) {
+                const option = document.createElement("option");
+                option.value = value;
+                option.textContent = label;
+                typeSelect.appendChild(option);
+            }
+
+            const preferredX = columns.findIndex(name => /model|name|category|type|date|month|city|label|make/i.test(name));
+            const preferredY = numericColumns.find(item => /average|avg|sum|count|total|rating|score|amount|fare|value/i.test(item.name)) || numericColumns[0];
+            xSelect.value = String(preferredX >= 0 ? preferredX : columns.findIndex((_, i) => !numericColumns.some(item => item.index === i)) >= 0
+                ? columns.findIndex((_, i) => !numericColumns.some(item => item.index === i)) : 0);
+            ySelect.value = String(preferredY.index);
+
+            const chartWrap = document.createElement("div");
+            chartWrap.className = "px-space-md pb-space-md overflow-x-auto";
+            const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            svg.setAttribute("viewBox", "0 0 900 390");
+            svg.setAttribute("role", "img");
+            svg.setAttribute("aria-label", "Chart of query results");
+            svg.classList.add("w-full", "min-w-[620px]", "h-auto", "border", "border-surface-dim", "bg-surface-container-lowest");
+            chartWrap.appendChild(svg);
+
+            const field = (label, select) => {
+                const wrap = document.createElement("label");
+                wrap.className = "flex flex-col gap-1 font-caption-mono text-caption-mono text-secondary";
+                wrap.textContent = label;
+                wrap.appendChild(select);
+                return wrap;
+            };
+            controls.append(field("CATEGORY / X AXIS", xSelect), field("VALUE / Y AXIS", ySelect), field("CHART STYLE", typeSelect));
+            panel.append(controls, chartWrap);
+
+            const draw = () => drawResultChart(svg, data, Number(xSelect.value), Number(ySelect.value), typeSelect.value);
+            xSelect.addEventListener("change", draw);
+            ySelect.addEventListener("change", draw);
+            typeSelect.addEventListener("change", draw);
+            panel.addEventListener("toggle", () => { if (panel.open) draw(); });
+            return panel;
+        }
+
+        function makeChartSelect(label, fields) {
+            const select = document.createElement("select");
+            select.className = "font-body-md text-body-md text-on-surface bg-surface-container-lowest border border-surface-dim px-space-sm py-1 min-w-36";
+            select.setAttribute("aria-label", label);
+            for (const field of fields) {
+                const option = document.createElement("option");
+                option.value = String(field.index);
+                option.textContent = field.name;
+                select.appendChild(option);
+            }
+            return select;
+        }
+
+        function drawResultChart(svg, data, xIndex, yIndex, type) {
+            const ns = "http://www.w3.org/2000/svg";
+            const make = (tag, attrs = {}, text = "") => {
+                const node = document.createElementNS(ns, tag);
+                for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+                if (text) node.textContent = text;
+                return node;
+            };
+            svg.replaceChildren();
+            const points = (data.rows || []).map((row, index) => ({
+                label: row[xIndex] == null ? `Row ${index + 1}` : String(row[xIndex]),
+                value: row[yIndex] == null || row[yIndex] === "" ? NaN : Number(row[yIndex]),
+            })).filter(point => Number.isFinite(point.value)).slice(0, 30);
+            if (!points.length) {
+                svg.appendChild(make("text", { x: 450, y: 190, "text-anchor": "middle", fill: "#5f5e5e", "font-size": 14 }, "No numeric values available for this selection."));
+                return;
+            }
+            const left = 76, right = 24, top = 28, bottom = 92;
+            const width = 900 - left - right, height = 390 - top - bottom;
+            const min = Math.min(0, ...points.map(point => point.value));
+            const max = Math.max(0, ...points.map(point => point.value));
+            const span = max - min || 1;
+            const y = value => top + ((max - value) / span) * height;
+            const baseline = y(0);
+            const title = `${data.columns[xIndex]} by ${data.columns[yIndex]}`;
+            svg.setAttribute("aria-label", title);
+            svg.appendChild(make("title", {}, title));
+            svg.appendChild(make("text", { x: left, y: 18, fill: "#1c1c18", "font-size": 13, "font-weight": 600 }, title));
+
+            for (let tick = 0; tick <= 4; tick++) {
+                const value = max - (span * tick / 4);
+                const py = top + height * tick / 4;
+                svg.appendChild(make("line", { x1: left, y1: py, x2: 900 - right, y2: py, stroke: "#dcdad3", "stroke-width": 1 }));
+                svg.appendChild(make("text", { x: left - 10, y: py + 4, "text-anchor": "end", fill: "#5f5e5e", "font-size": 10 }, Number(value.toPrecision(4)).toString()));
+            }
+
+            const slot = width / points.length;
+            if (type === "line") {
+                const coords = points.map((point, index) => `${left + slot * (index + 0.5)},${y(point.value)}`).join(" ");
+                svg.appendChild(make("polyline", { points: coords, fill: "none", stroke: "#b12500", "stroke-width": 3, "stroke-linejoin": "round", "stroke-linecap": "round" }));
+                points.forEach((point, index) => {
+                    const cx = left + slot * (index + 0.5), cy = y(point.value);
+                    const circle = make("circle", { cx, cy, r: 4, fill: "#b12500" });
+                    circle.appendChild(make("title", {}, `${point.label}: ${point.value}`));
+                    svg.appendChild(circle);
+                });
+            } else {
+                const barWidth = Math.max(2, Math.min(44, slot * 0.68));
+                points.forEach((point, index) => {
+                    const barY = Math.min(y(point.value), baseline);
+                    const rect = make("rect", { x: left + slot * index + (slot - barWidth) / 2, y: barY, width: barWidth, height: Math.max(1, Math.abs(baseline - y(point.value))), fill: "#b12500", rx: 2 });
+                    rect.appendChild(make("title", {}, `${point.label}: ${point.value}`));
+                    svg.appendChild(rect);
+                });
+            }
+            svg.appendChild(make("line", { x1: left, y1: baseline, x2: 900 - right, y2: baseline, stroke: "#1c1c18", "stroke-width": 1 }));
+            const interval = Math.max(1, Math.ceil(points.length / 12));
+            points.forEach((point, index) => {
+                if (index % interval !== 0 && index !== points.length - 1) return;
+                const label = point.label.length > 18 ? `${point.label.slice(0, 17)}…` : point.label;
+                const tx = left + slot * (index + 0.5);
+                const text = make("text", { x: tx, y: 315, "text-anchor": "end", fill: "#5f5e5e", "font-size": 10, transform: `rotate(-32 ${tx} 315)` }, label);
+                text.appendChild(make("title", {}, point.label));
+                svg.appendChild(text);
+            });
+            if (data.rows.length > points.length) {
+                svg.appendChild(make("text", { x: 900 - right, y: 378, "text-anchor": "end", fill: "#5f5e5e", "font-size": 10 }, `Showing ${points.length} of ${data.rows.length} rows`));
+            }
         }
 
         function headerBlock(ledgerLabel, answer, rowCount, error, timingMs) {
@@ -793,7 +956,7 @@
             return wrap;
         }
 
-        function actionsStrip(query) {
+        function actionsStrip(query, kind, result) {
             const strip = document.createElement("div");
             strip.className = "px-space-md py-space-sm border-t border-on-surface bg-surface-container-low flex flex-wrap items-center justify-between gap-space-sm";
             const left = document.createElement("div");
@@ -815,8 +978,8 @@
             right.textContent = "FORMAT: CSV / EXCEL READABLE";
             strip.appendChild(right);
 
-            strip.querySelector("#btn-copy").addEventListener("click", () => copyResults());
-            strip.querySelector("#btn-download").addEventListener("click", () => downloadResults());
+            strip.querySelector("#btn-copy").addEventListener("click", event => copyResults(result, event.currentTarget));
+            strip.querySelector("#btn-download").addEventListener("click", () => downloadResults(kind, result));
             return strip;
         }
 
@@ -932,7 +1095,6 @@
            ETL result rendering
            ============================================================ */
         function renderEtlResult(container, result, query) {
-            currentResult = result;
             container.innerHTML = "";
             const header = headerBlock("OUTPUT LEDGER // ROUTED VIA: ETL", result.answer, null, null, result.timing_ms);
 
@@ -971,13 +1133,12 @@
             wrap.appendChild(details);
             container.appendChild(wrap);
 
-            container.appendChild(actionsStrip(query, "etl"));
+            container.appendChild(actionsStrip(query, "etl", result));
             appendFollowup(container, query, result.answer, "etl");
             appendTransparency(container, result, query);
         }
 
         function renderPlainResult(container, result, query) {
-            currentResult = result;
             container.innerHTML = "";
             const wrap = document.createElement("div");
             wrap.className = "bg-surface-container-lowest border border-on-surface mb-space-lg";
@@ -995,60 +1156,47 @@
             wrap.appendChild(body);
             container.appendChild(wrap);
 
-            container.appendChild(actionsStrip(query, "plain"));
+            container.appendChild(actionsStrip(query, "plain", result));
             appendTransparency(container, result, query);
         }
 
         /* ============================================================
            Copy / download
            ============================================================ */
-        function copyResults() {
-            const resultsArea = document.getElementById("results-area");
-            const rows = resultsArea.querySelectorAll("tr");
-            if (!rows.length) return;
+        function resultCsv(result) {
+            const sql = result && result.sql;
+            if (!sql || !sql.columns || !sql.rows) return "";
+            const quote = value => `"${String(value ?? "").replace(/"/g, '""')}"`;
+            return [sql.columns.map(quote).join(","), ...sql.rows.map(row => row.map(quote).join(","))].join("\r\n");
+        }
 
-            let csv = "";
-            for (let r = 0; r < rows.length; r++) {
-                const cells = rows[r].querySelectorAll("th, td");
-                if (!cells.length) continue;
-                const vals = [];
-                for (const c of cells) vals.push(c.textContent.replace(/"/g, '""').trim());
-                csv += vals.join(",") + "\n";
-                if (r === 0) csv += "\n";
-            }
-            const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `data_agent_export_${Math.round(Date.now() / 1000)}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
-
-            const btn = document.getElementById("btn-copy");
-            if (btn) {
-                btn.dataset.original = btn.innerHTML;
-                btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> COPIED`;
-                setTimeout(() => { btn.innerHTML = btn.dataset.original || btn.innerHTML; }, 1800);
+        async function copyResults(result, button) {
+            const text = resultCsv(result) || (result && result.answer) || "";
+            if (!text) return;
+            try {
+                await navigator.clipboard.writeText(text);
+                const original = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span><span>Copied</span>';
+                setTimeout(() => { button.innerHTML = original; }, 1600);
+            } catch (error) {
+                const textarea = document.createElement("textarea");
+                textarea.value = text;
+                textarea.style.position = "fixed";
+                textarea.style.opacity = "0";
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand("copy");
+                textarea.remove();
             }
         }
 
-        function downloadResults(kind) {
-            const resultsArea = document.getElementById("results-area");
-            const rows = resultsArea.querySelectorAll("tr");
-            if (rows.length) {
-                let csv = "";
-                for (let r = 0; r < rows.length; r++) {
-                    const cells = rows[r].querySelectorAll("th, td");
-                    if (!cells.length) continue;
-                    const vals = [];
-                    for (const c of cells) vals.push(c.textContent.replace(/"/g, '""').trim());
-                    csv += vals.join(",") + "\n";
-                }
+        function downloadResults(kind, result) {
+            const csv = resultCsv(result);
+            if (csv) {
                 const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = `data_agent_table_${Math.round(Date.now() / 1000)}.csv`;
+                link.download = `data_agent_results_${Math.round(Date.now() / 1000)}.csv`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
@@ -1056,28 +1204,22 @@
                 return;
             }
 
-            const sql = currentResult && currentResult.sql ? currentResult.sql : null;
-            if (sql && sql.columns && sql.rows && sql.rows.length) {
-                const header = sql.columns.map(col => '"' + String(col).replace(/"/g, '""') + '"').join(",") + "\n";
-                const lines = sql.rows.map(row => sql.columns.map((_, i) => {
-                    const v = row[i];
-                    const s = (v == null || v === undefined) ? "" : String(v);
-                    return '"' + s.replace(/"/g, '""') + '"';
-                }).join(",")).join("\n");
-                const blob = new Blob([header + lines], { type: "text/csv;charset=utf-8" });
+            if (kind === "etl" && result && result.etl && result.etl.output_path) {
+                const parts = result.etl.output_path.replace(/\\/g, "/").split("/");
+                window.location.href = "/api/files/" + encodeURIComponent(parts[parts.length - 2]) + "/" + encodeURIComponent(parts[parts.length - 1]);
+                return;
+            }
+
+            const answer = result && result.answer;
+            if (answer) {
+                const blob = new Blob([answer], { type: "text/plain;charset=utf-8" });
                 const link = document.createElement("a");
                 link.href = URL.createObjectURL(blob);
-                link.download = `data_agent_table_${Math.round(Date.now() / 1000)}.csv`;
+                link.download = `data_agent_answer_${Math.round(Date.now() / 1000)}.txt`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
                 URL.revokeObjectURL(link.href);
-                return;
-            }
-
-            if (kind === "etl" && currentResult && currentResult.etl && currentResult.etl.output_path) {
-                window.location.href = "/api/files/" + encodeURIComponent(currentResult.etl.output_path.split("/").slice(-2)[0]) + "/" + encodeURIComponent(currentResult.etl.output_path.split("/").slice(-1)[0]);
-                return;
             }
         }
 
