@@ -489,6 +489,7 @@
             const hint = document.getElementById("database-suggestion-hint");
             const refreshButton = document.getElementById("suggest-query-button");
             let requestId = 0;
+            let shownSuggestions = [];
 
             const refreshSuggestions = async () => {
                 const value = select.value || "auto";
@@ -505,16 +506,17 @@
                     const response = await fetch("/api/query-suggestions", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ dataset: value })
+                        body: JSON.stringify({ dataset: value, exclude: shownSuggestions })
                     });
                     const result = await response.json();
                     if (currentRequest !== requestId || select.value !== value) return;
                     if (!response.ok || result.status !== "success") throw new Error(result.message || "Suggestion generation failed.");
                     const suggestions = result.suggestions || [];
                     if (!suggestions.length) {
-                        hint.textContent = result.message || "No suggestions are available for this database.";
+                        hint.textContent = result.message || "No new questions were generated. Try suggesting again.";
                         return;
                     }
+                    shownSuggestions = [...new Set([...shownSuggestions, ...suggestions])].slice(-30);
                     const selectedTable = value.startsWith("table:") ? value.slice("table:".length) : null;
                     hint.textContent = selectedTable
                         ? `Generated from the ${selectedTable} table’s columns and data types.`
@@ -546,6 +548,7 @@
                 const show = select.value === "database" || select.value.startsWith("table:");
                 panel.classList.toggle("hidden", !show);
                 if (show) refreshSuggestions();
+                shownSuggestions = [];
             });
             if (select.value === "database" || select.value.startsWith("table:")) refreshSuggestions();
         }
@@ -638,6 +641,7 @@
             qaContainer.scrollIntoView({ behavior: 'smooth' });
             input.disabled = true;
             document.getElementById("ask-button").disabled = true;
+            const pipelineStrip = document.getElementById("pipeline-strip");
 
             try {
                 showPipeline("unspecified");
@@ -648,6 +652,7 @@
                 }).then(r => r.json());
 
                 if (result.status !== "success") {
+                    pipelineStrip.classList.add("hidden");
                     qaContainer.innerHTML = `
                                 <div class="bg-error-container border border-on-error p-space-lg mb-space-lg w-full">
                                     <div class="flex items-start gap-space-sm">
@@ -681,6 +686,7 @@
                     prependQueryBlock(qaContainer);
                 }
             } catch (err) {
+                pipelineStrip.classList.add("hidden");
                 qaContainer.innerHTML = `
                             <div class="bg-error-container border border-on-error p-space-lg mb-space-lg w-full">
                                 <div class="flex items-start gap-space-sm">
@@ -694,6 +700,7 @@
                             </div>
                         `;
             } finally {
+                pipelineStrip.classList.add("hidden");
                 input.disabled = false;
                 document.getElementById("ask-button").disabled = false;
             }
@@ -783,8 +790,11 @@
                             <div class="p-space-lg border-b border-surface-dim flex flex-col items-start gap-space-sm">
                                 <span class="font-caption-mono text-caption-mono text-secondary uppercase">EXECUTION ERROR</span>
                                 <code class="font-data-code text-data-code text-error select-all block whitespace-pre rounded border border-error-container p-space-sm">${escapeHtml(result.sql.error)}</code>
+                                <button id="fix-failed-query" type="button" class="border border-error bg-surface-container-lowest px-space-md py-space-xs font-label-uppercase text-label-uppercase text-error hover:bg-error-container transition-colors">Fix this query</button>
+                                <span id="fix-query-status" class="font-caption-mono text-caption-mono text-secondary" aria-live="polite"></span>
                             </div>
                         `;
+                body.querySelector("#fix-failed-query").addEventListener("click", event => fixFailedQuery(event.currentTarget, body.querySelector("#fix-query-status"), container, result, query));
                 container.appendChild(body);
                 appendFollowup(container, query, result.sql.query, "sql");                    container.appendChild(actionsStrip(query, "sql", result));
                 appendTransparency(container, result, query);
@@ -913,6 +923,37 @@
             container.appendChild(actionsStrip(query, "sql", result));
             appendFollowup(container, query, result.sql.query, "sql");
             appendTransparency(container, result, query);
+        }
+
+        async function fixFailedQuery(button, status, container, failedResult, question) {
+            button.disabled = true;
+            button.textContent = "Fixing query…";
+            status.textContent = "Using the database error and schema to repair the query.";
+            try {
+                const response = await fetch("/api/fix-query", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        question,
+                        sql: failedResult.sql.query,
+                        error: failedResult.sql.error,
+                        dataset: document.getElementById("dataset-select").value || "database"
+                    })
+                });
+                const fixed = await response.json();
+                if (!response.ok || fixed.status !== "success") throw new Error(fixed.message || response.statusText);
+                const repairedResult = {
+                    ...failedResult,
+                    answer: `Repaired query for: ${question}`,
+                    timing_ms: 0,
+                    sql: { ...failedResult.sql, ...fixed.result, query: fixed.sql, error: null }
+                };
+                renderSqlResult(container, repairedResult, question);
+            } catch (error) {
+                status.textContent = `Could not fix this query: ${error.message || "Please try again."}`;
+                button.disabled = false;
+                button.textContent = "Try fixing again";
+            }
         }
 
         function buildVisualization(data, query = "") {
