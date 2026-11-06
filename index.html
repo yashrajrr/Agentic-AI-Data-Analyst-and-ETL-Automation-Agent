@@ -200,6 +200,7 @@
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Who are our top 5 users by rating?')">Who are our top 5 users by rating?</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Show me the payments for this month')">Show me this month's payments</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Which vehicles got the lowest ratings?')">Which vehicles got the lowest ratings?</button>
+                            <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Generate a chart of dropoff time vs distance km')">Drop-off time vs distance</button>
                             <button class="bg-surface-container-lowest text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-0.5 border border-surface-dim transition-colors" type="button" onclick="setQuery('Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV')">Extract data from https://pokeapi.co/api/v2/pokemon and save as CSV</button>
                         </div>
                     </div>
@@ -780,7 +781,7 @@
             }
             table.appendChild(tbody);
             body.appendChild(table);
-            const visualization = buildVisualization(result.sql);
+            const visualization = buildVisualization(result.sql, query);
             if (visualization) body.appendChild(visualization);
             container.appendChild(body);
 
@@ -789,7 +790,7 @@
             appendTransparency(container, result, query);
         }
 
-        function buildVisualization(data) {
+        function buildVisualization(data, query = "") {
             const columns = data.columns || [];
             const rows = data.rows || [];
             if (!columns.length || !rows.length) return null;
@@ -799,6 +800,7 @@
             if (!numericColumns.length) return null;
 
             const panel = document.createElement("details");
+            panel.open = /\b(chart|graph|plot|visuali[sz]e)\b/i.test(query);
             panel.className = "border-t border-surface-dim bg-surface-container-lowest";
             const summary = document.createElement("summary");
             summary.className = "cursor-pointer list-none flex items-center gap-space-sm px-space-md py-space-sm font-label-uppercase text-label-uppercase text-primary hover:bg-surface-container-low";
@@ -819,11 +821,25 @@
                 typeSelect.appendChild(option);
             }
 
-            const preferredX = columns.findIndex(name => /model|name|category|type|date|month|city|label|make/i.test(name));
-            const preferredY = numericColumns.find(item => /average|avg|sum|count|total|rating|score|amount|fare|value/i.test(item.name)) || numericColumns[0];
+            const normalizeField = value => String(value).toLowerCase().replace(/drop\s*off/g, "dropoff").replace(/[^a-z0-9]+/g, " ").trim();
+            const relation = String(query).match(/(.+?)\s+vs\.?\s+(.+?)(?:\s+(?:chart|graph|plot|visuali[sz]e)\b|$)/i);
+            const requestedX = relation ? normalizeField(relation[1].replace(/^(?:generate|show|create|plot)\s+(?:a\s+)?(?:chart|graph|plot)?\s*(?:of|for)?\s*/i, "")) : "";
+            const requestedY = relation ? normalizeField(relation[2]) : "";
+            const findRequested = phrase => phrase ? columns.findIndex(name => {
+                const normalized = normalizeField(name);
+                return normalized === phrase || phrase.includes(normalized) || normalized.includes(phrase);
+            }) : -1;
+            const requestedXIndex = findRequested(requestedX);
+            const requestedYIndex = findRequested(requestedY);
+            const preferredX = requestedXIndex >= 0 ? requestedXIndex : columns.findIndex(name => /time|date|timestamp/i.test(name)) >= 0
+                ? columns.findIndex(name => /time|date|timestamp/i.test(name))
+                : columns.findIndex(name => /model|name|category|type|month|city|label|make/i.test(name));
+            const preferredY = numericColumns.find(item => item.index === requestedYIndex) ||
+                numericColumns.find(item => /distance|average|avg|sum|count|total|rating|score|amount|fare|value/i.test(item.name)) || numericColumns[0];
             xSelect.value = String(preferredX >= 0 ? preferredX : columns.findIndex((_, i) => !numericColumns.some(item => item.index === i)) >= 0
                 ? columns.findIndex((_, i) => !numericColumns.some(item => item.index === i)) : 0);
             ySelect.value = String(preferredY.index);
+            if (preferredX >= 0 && /time|date|timestamp/i.test(columns[preferredX])) typeSelect.value = "line";
 
             const chartWrap = document.createElement("div");
             chartWrap.className = "px-space-md pb-space-md overflow-x-auto";
@@ -849,6 +865,7 @@
             ySelect.addEventListener("change", draw);
             typeSelect.addEventListener("change", draw);
             panel.addEventListener("toggle", () => { if (panel.open) draw(); });
+            if (panel.open) draw();
             return panel;
         }
 

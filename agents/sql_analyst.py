@@ -27,12 +27,23 @@ CROSS JOIN lowest_score AS ls
 WHERE vs.average_driver_rating = ls.value
 ORDER BY vs.make, vs.model, vs.vehicle_id"""
 
+DROPOFF_DISTANCE_CHART_SQL = """SELECT dropoff_time, distance_km
+FROM public.rides
+WHERE dropoff_time IS NOT NULL AND distance_km IS NOT NULL
+ORDER BY dropoff_time ASC
+LIMIT 100"""
+
 
 # -------------------------------------- AI Agent Code--------------------------------------
 
 def curate_ques(state: AgentSchema) -> AgentSchema: 
 
     user_question = state.user_question # Bcz this is a Pydantic model object
+
+    if is_dropoff_distance_chart_request(user_question):
+        state.curated_ques = user_question
+        state.messages = state.messages + [HumanMessage(content=user_question)]
+        return state
 
     llm = pick_llm("low")  # Pick the appropriate LLM based on the level of the question
 
@@ -44,9 +55,20 @@ def curate_ques(state: AgentSchema) -> AgentSchema:
     return state 
 
 
+def is_dropoff_distance_chart_request(question: str) -> bool:
+    import re
+    has_chart_intent = bool(re.search(r"\b(chart|graph|plot|visuali[sz]e)\b", question, re.IGNORECASE))
+    has_dropoff = bool(re.search(r"\bdrop\s*off\s*(?:time|timestamp)?\b", question, re.IGNORECASE))
+    has_distance = bool(re.search(r"\bdistance\s*(?:km|kilomet(?:er|re)s?)?\b", question, re.IGNORECASE))
+    return has_chart_intent and has_dropoff and has_distance
+
+
 def prompt_query_context(state: AgentSchema) -> AgentSchema:
 
     curated_question = state.curated_ques
+    if is_dropoff_distance_chart_request(state.user_question):
+        state.prompt_query_context = "Use public.rides.dropoff_time and public.rides.distance_km to create the requested chart data."
+        return state
     dataset_context = ""
     if state.selected_dataset == "database":
         dataset_context = "The user explicitly selected the database as the data source. Use the relevant public tables.\n"
@@ -65,7 +87,7 @@ def prompt_query_context(state: AgentSchema) -> AgentSchema:
     with the user's original query and the schema details of the database, including
     table names, column names, data types, and sample data for each table so that 
     you can understand the structure of the database and generate an accurate SQL query.
-    Unless user explicitly asks for specific number of rows, always limit the output to 10 rows.
+    Unless the user asks for a chart/trend/visualization, limit ordinary result sets to 10 rows. For chart requests, return up to 100 ordered data points and include the requested X and Y fields.
     Follow the actual schema relationships shown below. In this sample schema, ratings.driver_id identifies the rated driver; vehicles.driver_id identifies the vehicle's driver. There is no vehicle_id in ratings or rides. For a vehicle-rating question, compute the driver's average rating and associate it with that driver's vehicle, and state this limitation in the answer. Do not invent a direct vehicle-to-rating relationship.
     Note - Just generate the SQL query without any explanation or additional text because
     this query will be executed directly on the database. So, the output should be SQL
@@ -98,6 +120,9 @@ def generate_sql(state: AgentSchema) -> AgentSchema:
     if vehicle_rating_question:
         state.generated_sql_query = VEHICLE_LOWEST_RATINGS_SQL
         return state
+    if is_dropoff_distance_chart_request(state.user_question):
+        state.generated_sql_query = DROPOFF_DISTANCE_CHART_SQL
+        return state
 
     generated_sql_query = llm.invoke(prompt).content  # Generate the SQL query using the LLM
 
@@ -118,6 +143,10 @@ def is_safe_sql(state: AgentSchema) -> AgentSchema:
     if sql_query == VEHICLE_LOWEST_RATINGS_SQL:
         state.is_safe = "Yes"
         state.comments = "This is a fixed, read-only aggregate query over vehicles and ratings."
+        return state
+    if sql_query == DROPOFF_DISTANCE_CHART_SQL:
+        state.is_safe = "Yes"
+        state.comments = "This is a fixed, read-only query over the rides table."
         return state
 
     llm = pick_llm("medium")  

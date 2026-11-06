@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -29,6 +30,14 @@ def router_node(state:DataAgentSchema):
         return state
     if state.selected_dataset.startswith("file:"):
         state.route_response = "etl"
+        return state
+
+    latest_message = state.messages[-1].content if state.messages else ""
+    latest_text = latest_message if isinstance(latest_message, str) else str(latest_message)
+    is_chart_request = any(word in latest_text.lower() for word in ("chart", "graph", "plot", "visualize", "visualise"))
+    explicitly_file_based = bool(re.search(r"(?:data/(?:extract|transform|uploads)/|\.(?:csv|json|parquet)\b|uploaded file|my file)", latest_text, re.IGNORECASE))
+    if is_chart_request and not explicitly_file_based:
+        state.route_response = "sql"
         return state
 
     from langchain_core.messages import SystemMessage
