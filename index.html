@@ -764,6 +764,10 @@
             const pageSize = 10;
             const resultRows = result.sql.rows || [];
             let pageIndex = 0;
+            let pageStatus = null;
+            let pageNumber = null;
+            let previousButton = null;
+            let nextButton = null;
             const renderPage = () => {
                 tbody.replaceChildren();
                 const firstRow = pageIndex * pageSize;
@@ -784,7 +788,7 @@
                 tr.innerHTML = cells.join("");
                 tbody.appendChild(tr);
                 }
-                if (resultRows.length > pageSize) {
+                if (resultRows.length > pageSize && pageStatus) {
                     const lastRow = Math.min(firstRow + pageSize, resultRows.length);
                     pageStatus.textContent = `Showing ${firstRow + 1}–${lastRow} of ${resultRows.length}`;
                     pageNumber.textContent = `Page ${pageIndex + 1} of ${Math.ceil(resultRows.length / pageSize)}`;
@@ -798,12 +802,12 @@
                 const pager = document.createElement("nav");
                 pager.className = "flex flex-wrap items-center justify-between gap-space-sm border-t border-surface-dim px-space-md py-space-sm bg-surface-container-low";
                 pager.setAttribute("aria-label", "Result pages");
-                const pageStatus = document.createElement("span");
+                pageStatus = document.createElement("span");
                 pageStatus.className = "font-caption-mono text-caption-mono text-secondary";
                 pageStatus.setAttribute("aria-live", "polite");
                 const controls = document.createElement("div");
                 controls.className = "flex items-center gap-space-sm";
-                const pageNumber = document.createElement("span");
+                pageNumber = document.createElement("span");
                 pageNumber.className = "font-caption-mono text-caption-mono text-secondary";
                 const makePageButton = (label, icon) => {
                     const button = document.createElement("button");
@@ -812,15 +816,16 @@
                     button.innerHTML = `<span class="material-symbols-outlined text-[16px]">${icon}</span><span>${label}</span>`;
                     return button;
                 };
-                const previousButton = makePageButton("Previous", "chevron_left");
-                const nextButton = makePageButton("Next", "chevron_right");
+                previousButton = makePageButton("Previous", "chevron_left");
+                nextButton = makePageButton("Next", "chevron_right");
                 previousButton.addEventListener("click", () => { if (pageIndex > 0) { pageIndex--; renderPage(); } });
                 nextButton.addEventListener("click", () => { if ((pageIndex + 1) * pageSize < resultRows.length) { pageIndex++; renderPage(); } });
                 controls.append(previousButton, pageNumber, nextButton);
                 pager.append(pageStatus, controls);
                 body.appendChild(pager);
+                renderPage();
             }
-            renderPage();
+            if (resultRows.length <= pageSize) renderPage();
             const visualization = buildVisualization(result.sql, query);
             if (visualization) body.appendChild(visualization);
             container.appendChild(body);
