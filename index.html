@@ -194,6 +194,17 @@
                             <span class="font-caption-mono text-caption-mono text-secondary">Optional · choose a table or saved file</span>
                         </div>
 
+                        <div id="database-suggestions" class="hidden mt-space-sm border border-surface-dim bg-surface-container-lowest p-space-md" aria-live="polite">
+                            <div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-sm">
+                                <div>
+                                    <p class="font-label-uppercase text-label-uppercase text-on-surface">Need an idea?</p>
+                                    <p id="database-suggestion-hint" class="font-caption-mono text-caption-mono text-secondary mt-1">Choose a sample question to fill the query box.</p>
+                                </div>
+                                <button id="suggest-query-button" class="border border-surface-dim px-space-sm py-1 font-caption-mono text-caption-mono text-on-surface hover:bg-surface-container transition-colors" type="button">Suggest a query</button>
+                            </div>
+                            <div id="database-suggestion-list" class="flex flex-wrap gap-space-xs"></div>
+                        </div>
+
                         <!-- Example chips -->
                         <div class="flex flex-wrap items-center gap-space-xs pt-space-xs">
                             <span class="font-caption-mono text-caption-mono text-secondary uppercase mr-space-xs">Examples:</span>
@@ -466,9 +477,95 @@
             document.getElementById("query-input").addEventListener("keydown", e => {
                 if (e.key === "Enter") { e.preventDefault(); document.getElementById("ask-button").click(); }
             });
+            initDatabaseSuggestions();
             reconcileViewFromFragment();
             initConnection();
         })();
+
+        function initDatabaseSuggestions() {
+            const select = document.getElementById("dataset-select");
+            const panel = document.getElementById("database-suggestions");
+            const list = document.getElementById("database-suggestion-list");
+            const hint = document.getElementById("database-suggestion-hint");
+            const suggestionsByTable = {
+                rides: [
+                    "How many rides were completed each day?",
+                    "What is the average ride distance by day?",
+                    "Generate a chart of dropoff time vs distance km"
+                ],
+                payments: [
+                    "What is the total payment amount by payment method?",
+                    "Show daily payment totals for the last 30 days",
+                    "Which payment methods are used most often?"
+                ],
+                vehicles: [
+                    "How many vehicles are there by make and model?",
+                    "Which vehicle models have the highest average rating?",
+                    "Show the number of vehicles by year"
+                ],
+                ratings: [
+                    "What is the average rating by driver?",
+                    "How many ratings were submitted each month?",
+                    "Which drivers have the most ratings?"
+                ],
+                users: [
+                    "How many users signed up each month?",
+                    "How many users are there by city?",
+                    "Show the newest 10 users"
+                ]
+            };
+            const genericSuggestions = [
+                "How many records are in this table?",
+                "Show the newest 10 records",
+                "Summarize this table by its categories"
+            ];
+            let availableTables = [];
+            let activeSuggestions = [];
+            let suggestionIndex = 0;
+
+            const renderSuggestions = () => {
+                const value = select.value || "auto";
+                const selectedTable = value.startsWith("table:") ? value.slice("table:".length).toLowerCase() : "";
+                const show = value === "database" || Boolean(selectedTable);
+                panel.classList.toggle("hidden", !show);
+                if (!show) return;
+
+                const tableNames = selectedTable ? [selectedTable] : availableTables;
+                const tableSuggestions = tableNames.flatMap(name => suggestionsByTable[name] || []);
+                activeSuggestions = [...new Set(tableSuggestions.length ? tableSuggestions : genericSuggestions)];
+                if (suggestionIndex >= activeSuggestions.length) suggestionIndex = 0;
+                hint.textContent = selectedTable
+                    ? `Sample questions for the ${selectedTable} table.`
+                    : availableTables.length
+                        ? `Sample questions based on ${availableTables.length} available database table${availableTables.length === 1 ? "" : "s"}.`
+                        : "Sample database questions. Table details are unavailable right now.";
+                list.replaceChildren();
+                const start = suggestionIndex;
+                const visibleSuggestions = Array.from({ length: Math.min(3, activeSuggestions.length) }, (_, offset) => activeSuggestions[(start + offset) % activeSuggestions.length]);
+                for (const question of visibleSuggestions) {
+                    const chip = document.createElement("button");
+                    chip.type = "button";
+                    chip.className = "bg-surface-container-low text-on-surface hover:bg-surface-container font-body-md text-body-md px-space-sm py-1 border border-surface-dim transition-colors text-left";
+                    chip.textContent = question;
+                    chip.addEventListener("click", () => {
+                        document.getElementById("query-input").value = question;
+                        document.getElementById("query-input").focus();
+                    });
+                    list.appendChild(chip);
+                }
+            };
+
+            document.getElementById("suggest-query-button").addEventListener("click", () => {
+                if (activeSuggestions.length) suggestionIndex = (suggestionIndex + 3) % activeSuggestions.length;
+                renderSuggestions();
+            });
+            select.addEventListener("change", () => { suggestionIndex = 0; renderSuggestions(); });
+            document.addEventListener("database-tables-loaded", event => {
+                availableTables = event.detail || [];
+                renderSuggestions();
+            });
+            renderSuggestions();
+        }
 
         function reconcileViewFromFragment() {
             const hash = window.location.hash.replace("#", "");
@@ -1374,6 +1471,9 @@
                     select.appendChild(group);
                 }
                 if ([...select.options].some(option => option.value === selected)) select.value = selected;
+                document.dispatchEvent(new CustomEvent("database-tables-loaded", {
+                    detail: datasets.filter(item => item.type === "table").map(item => item.value.slice("table:".length))
+                }));
             } catch (error) {
                 /* Keep automatic source detection available when catalog loading fails. */
             }
